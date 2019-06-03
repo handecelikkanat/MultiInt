@@ -1,5 +1,7 @@
 (Ale’s current project, also Edinburgh people) Analyzing Transformer Heads. Pruning (Edinburgh) vs. growing (Ale) transformer heads to find an optimal number of non-redundant heads. Experiments on massive data on new CSC cluster.
 
+### TODO
+* train a system with 6 layers and 1 ah of 64 dim. Then, re-train the system keeping those ah fixed and adding a new one.
 
 
 ### Benchmark data
