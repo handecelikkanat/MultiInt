@@ -1,1 +1,12 @@
 # MultiInt
+
+1. (Jorg) As we add more languages, do we get more abstract/informed representations? As a way of explicit measuring, does our model get better in probing tasks? This is one of the main hypotheses of FoTran. (We will start from this. Dataset and evaluation details below.)
+2. (Miikka) Models in multi-lingual settings. How do representations differ when we train models for lans with different word order, eg. SOV vs SVO, or flexible (Fin) vs strict (En) order? How does the sentence representations change between different languages' models? How about we put all the languages into the same model? What happens then? Do they converge to some common representation?
+3. (Jorg) Forcing some heads / or an initial model to learn some information, eg. syntax. Do the remaining heads / the rest of the model learn the rest of linguistic information, eg. semantics?
+4. (Ale’s current project, also Edinburgh people) Analyzing Transformer Heads. Pruning (Edinburgh) vs. growing (Ale) transformer heads to find an optimal number of non-redundant heads. Experiments on massive data on new CSC cluster.
+5. (Ale) Shared encoder/decoders, with lang tags at different locations or non-existent. Do the attention heads recognize input language is different? Or does it focus on different language in different parts of the model?
+6. (Hande) Intrinsic dimensionality [Li et al.] of single-language model, vs. three language model, vs thirty language model. Does intrinsic dimensionality asymptotically converge? What happens as we keep adding languages?
+7. (Raul) Can we explicitly view how parameters change as the give new training data to the model? Or another language? Are the changes meaningful?
+8. (Raul) Can we distinguish the distributions that a multi-language model learns about each language? Are they overlapping? Multi-modal? Do we reach to an “average” distribution or to multiple separate distributions? Any ways to measure this?
+9. (Jorg) Compositionality? eg. [Hupkes et al: Learning compositionally through attentive guidance]. Can we work on compositionality as well?
+10. (Jorg and Miikka) Can we collaborate with Robert Osling? He works with massively parallel data (eg. Bible), works on typological relations between languages etc. Maybe we can find a parallel with the multilingual approach of Fotran + varying represenations in models as we input different languages + typological evaluations of languages + his work.
