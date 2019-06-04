@@ -2,6 +2,7 @@
 
 ### TODO
 * train a system with 6 layers and 1 ah of 64 dim (in training).  Then, re-train the system keeping those ah fixed and adding a new one.
+* training pre-trained word vector on the training data and use all them as fixed input layer (in training)
 
 
 ### Benchmark data
