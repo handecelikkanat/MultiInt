@@ -31,7 +31,7 @@ BLEU+case.mixed+numrefs.1+smooth.exp+tok.13a+version.1.2.11
 | 1-layer LSTM           | 57860738                 |       21.71            |
 | 6-layer TR 8AH tot 512 (default)    |   95963778         |         training          |
 | 6-layer TR 1AH 64 we 512    |   79424514         |         training          |
-| 1-layer TR 1AH 64 we 512    |   56425154         |         training          |
+| 1-layer TR 1AH 64 we 512    |   56425154         |         16.74          |
 | 1-layer TR 1AH 64 we 512 (init fasttext)   |   56425154         |         training          |
 | 1-layer TR 1AH 64 we 512 (init and fixed fasttext)   |   56425154 - we        |         training          |
 | 1-layer TR 1AH tot 512 dim  | 59181698            |       18.47            |
