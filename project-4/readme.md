@@ -2,6 +2,12 @@
 
 ### TODO
 * retrain 1-layer TR 1AH 64 we 512 and 6-layer TR 1AH 64 we 512 adding another attention head and freezing the other parameters
+  * initialize the trainable parameteres with uniform distribution (and generator to the previous one)
+  * initialize the trainable parameteres with identity matrix (and generator to the previous one)
+  * initialize the trainable parameteres with xavier (as the default setting) (and generator to the previous one)
+  * initialize the trainable parameteres with identity matrix and generator to xavier 
+  * initialize the trainable parameteres with identity matrix and generator to identity
+  * initialize the trainable parameteres with xavier and generator to xavier
 * train from scratch 1-layer TR 2AH 64 we 512 and 6-layer TR 2AH 64 we 512
 
 
