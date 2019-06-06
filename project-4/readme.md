@@ -8,7 +8,7 @@
   * initialize the trainable parameteres with identity matrix and generator to xavier 
   * initialize the trainable parameteres with identity matrix and generator to identity
   * initialize the trainable parameteres with xavier and generator to xavier
-* train from scratch 1-layer TR 2AH 64 we 512 and 6-layer TR 2AH 64 we 512
+* train from scratch 1-layer TR 2AH 64 we 512 and 6-layer TR 2AH 64 we 512 ?
 
 
 ### Benchmark data
@@ -45,7 +45,7 @@ BLEU+case.mixed+numrefs.1+smooth.exp+tok.13a+version.1.2.11
 | 1-layer TR 2AH 64 we 512 from previous 1 AH (identity matrix and generator to identity) |   22824514  (33994432 frozen)       |         waiting          |
 | 1-layer TR 2AH 64 we 512 from previous 1 AH (xavier and generator to xavier) |   22824514  (33994432 frozen)       |         waiting          |
 | 1-layer TR 1AH 64 we 512 (init fasttext)   |   56425154         |       16.79            |
-| 1-layer TR 1AH 64 we 512 (init and fixed fasttext)   |   56425154 - we        |         training          |
+| 1-layer TR 1AH 64 we 512 (init and fixed fasttext)   |   56425154 - we        |         9.76          |
 | 1-layer TR 1AH tot 512 dim  | 59181698            |       18.47            |
 | 1-layer TR 8AH tot 512 dim  | 59181698            |       21.96            |
 | 1-layer TR 1AH tot 64 dim and we 64  |  7087810            |       10.47            |
