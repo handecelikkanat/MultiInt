@@ -2,6 +2,7 @@
 
 ### TODO
 * retrain 1-layer TR 1AH 64 we 512 and 6-layer TR 1AH 64 we 512 adding another attention head and freezing the other parameters
+* train from scratch 1-layer TR 2AH 64 we 512 and 6-layer TR 2AH 64 we 512
 
 
 ### Benchmark data
