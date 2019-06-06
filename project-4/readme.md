@@ -1,7 +1,7 @@
 (Ale’s current project, also Edinburgh people) Analyzing Transformer Heads. Pruning (Edinburgh) vs. growing (Ale) transformer heads to find an optimal number of non-redundant heads. Experiments on massive data on new CSC cluster.
 
 ### TODO
-* retrain 1-layer TR 1AH 64 we 512 and 6-layer TR 1AH 64 we 512 adding one attention head and freezing the other parameters
+* retrain 1-layer TR 1AH 64 we 512 and 6-layer TR 1AH 64 we 512 adding another attention head and freezing the other parameters
 
 
 ### Benchmark data
