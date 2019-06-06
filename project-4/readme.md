@@ -38,7 +38,7 @@ BLEU+case.mixed+numrefs.1+smooth.exp+tok.13a+version.1.2.11
 | 6-layer TR 8AH tot 512 (default)    |   95963778         |    25.91               |
 | 6-layer TR 1AH 64 we 512    |   79424514         |          24.04         |
 | 1-layer TR 1AH 64 we 512    |   56425154         |         16.74          |
-| 1-layer TR 2AH 64 we 512 from previous 1 AH (uniform distribution (and generator to the previous one))  |   22824514  (33994432 frozen)       |         training          |
+| 1-layer TR 2AH 64 we 512 from previous 1 AH (uniform distribution (and generator to the previous one))  |   22824514  (33994432 frozen)       |         50k steps 18.11          |
 | 1-layer TR 2AH 64 we 512 from previous 1 AH (identity matrix (and generator to the previous one)) |   22824514  (33994432 frozen)       |         training          |
 | 1-layer TR 2AH 64 we 512 from previous 1 AH (xavier (as the default setting) (and generator to the previous one)) |   22824514  (33994432 frozen)       |         training          |
 | 1-layer TR 2AH 64 we 512 from previous 1 AH (identity matrix and generator to xavier) |   22824514  (33994432 frozen)       |         training          |
