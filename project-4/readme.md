@@ -1,15 +1,8 @@
 (Ale’s current project, also Edinburgh people) Analyzing Transformer Heads. Pruning (Edinburgh) vs. growing (Ale) transformer heads to find an optimal number of non-redundant heads. Experiments on massive data on new CSC cluster.
 
 ### TODO
-* retrain 1-layer TR 1AH 64 we 512 and 6-layer TR 1AH 64 we 512 adding another attention head and freezing the other parameters
-  * initialize the trainable parameteres with uniform distribution (and generator to the previous one)
-  * initialize the trainable parameteres with identity matrix (and generator to the previous one)
-  * initialize the trainable parameteres with xavier (as the default setting) (and generator to the previous one)
-  * initialize the trainable parameteres with identity matrix and generator to xavier 
-  * initialize the trainable parameteres with identity matrix and generator to identity
-  * initialize the trainable parameteres with xavier and generator to xavier
-* train from scratch 1-layer TR 2AH 64 we 512 and 6-layer TR 2AH 64 we 512 ?
-
+* retrain 3rd ah 1 layer
+* retrain 2nd ah 6 layer
 
 ### Benchmark data
 * Train: *europarl, news-commentary, commoncrawl, rapid, paracrawl*  (allfiltered, shuffled, bpe35k from our wmt submission) 11555682 sentences (probably i will scale down to 2.5 M and re-run the training)
@@ -38,12 +31,10 @@ BLEU+case.mixed+numrefs.1+smooth.exp+tok.13a+version.1.2.11
 | 6-layer TR 8AH tot 512 (default)    |   95963778         |    25.91               |
 | 6-layer TR 1AH 64 we 512    |   79424514         |          24.04         |
 | 1-layer TR 1AH 64 we 512    |   56425154         |         16.74          |
-| 1-layer TR 2AH 64 we 512 from previous 1 AH (uniform distribution (and generator to the previous one))  |   22824514  (33994432 frozen)       |         50k steps 18.11   still training       |
-| 1-layer TR 2AH 64 we 512 from previous 1 AH (identity matrix (and generator to the previous one)) |   22824514  (33994432 frozen)       |         training          |
-| 1-layer TR 2AH 64 we 512 from previous 1 AH (xavier (as the default setting) (and generator to the previous one)) |   22824514  (33994432 frozen)       |         training          |
-| 1-layer TR 2AH 64 we 512 from previous 1 AH (identity matrix and generator to xavier) |   22824514  (33994432 frozen)       |         training          |
-| 1-layer TR 2AH 64 we 512 from previous 1 AH (identity matrix and generator to identity) |   22824514  (33994432 frozen)       |         waiting          |
-| 1-layer TR 2AH 64 we 512 from previous 1 AH (xavier and generator to xavier) |   22824514  (33994432 frozen)       |         waiting          |
+| 1-layer TR 2AH 64 we 512 from previous 1 AH (uniform distribution (and generator to the previous one))  |   22824514  (33994432 frozen)       |         50k steps 18.11 100k steps 18.42  150k steps 18.44 still training       |
+| 1-layer TR 2AH 64 we 512 from previous 1 AH (identity matrix (and generator to the previous one)) |   22824514  (33994432 frozen)       |     150k steps   3.91          |
+| 1-layer TR 2AH 64 we 512 from previous 1 AH (xavier (as the default setting) (and generator to the previous one)) |   22824514  (33994432 frozen)       |      150k steps   9.44          |
+| 1-layer TR 2AH 64 we 512 from previous 1 AH (identity matrix and generator to xavier) |   22824514  (33994432 frozen)       |         100k steps 3.77          |
 | 1-layer TR 1AH 64 we 512 (init fasttext)   |   56425154         |       16.79            |
 | 1-layer TR 1AH 64 we 512 (init and fixed fasttext)   |   56425154 - we        |         9.76          |
 | 1-layer TR 1AH tot 512 dim  | 59181698            |       18.47            |
