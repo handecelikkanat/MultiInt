@@ -38,8 +38,17 @@ from previous AH model (He distribution (and generator to the previous one))
 | 1-layer TR 2AH 64 we 512 |   22726018  (34092928 frozen)       |         training       |
 
 
+&nbsp;
+&nbsp;
+&nbsp;
 
 
+other experiments:
+
+
+&nbsp;
+&nbsp;
+&nbsp;
 
 
 | Model                  | number of parameters     | BLEU newstest2014 |
