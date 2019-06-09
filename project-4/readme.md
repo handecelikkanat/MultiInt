@@ -29,15 +29,18 @@ from previous AH model (He distribution (and generator to the previous one))
 | ---                    | ---                      |---                |
 | 1-layer LSTM           | 57860738                 |       21.71            |
 | 6-layer TR 8AH tot 512 (default)    |   95963778         |    25.91               |
+| 6-layer TR 8AH tot 512 (splitted ah)    |   95963778         |    training             |
 | 6-layer TR 1AH masking 0    |   95963778         |          training         |
 | 6-layer TR 1AH 64 we 512    |   79424514         |          24.04         |
-| 6-layer TR 2AH 64 we 512   |   46709378   (35077888 frozen)      |          training         |
+| 6-layer TR 2AH 64 we 512   |   46709378   (35077888 frozen)      |          25.84         |
+| 6-layer TR 3AH 64 we 512   |   47890178   (36259840 frozen)      |          training        |
 | 1-layer TR 8AH tot 512 dim  | 59181698            |       21.96            |
 | 1-layer TR 1AH tot 512 dim  | 59181698            |       18.47            |
-| 1-layer TR 1AH masking 0   |   59181698         |        training          |
+| 1-layer TR 1AH masking 0   |   59181698         |        16.90          |
 | 1-layer TR 1AH 64 we 512   |   56425154         |         16.74          |
 | 1-layer TR 2AH 64 we 512 (freeze only encoder ah)   |   22824514  (33994432 frozen)       |         50k steps 18.11 100k steps 18.42   150k steps 18.44 200k steps 18.77      |
-| 1-layer TR 2AH 64 we 512 |   22726018  (34092928 frozen)       |         training       |
+| 1-layer TR 2AH 64 we 512 |   22726018  (34092928 frozen)       |         18.30       |
+| 1-layer TR 3AH 64 we 512 |   22922818  (34289920 frozen)       |         training      |
 
 
 &nbsp;
