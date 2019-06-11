@@ -44,7 +44,7 @@ from previous AH model (He distribution (and generator to the previous one))
 | 1-layer TR 2AH 64 we 512 |   22726018  (34092928 frozen)       |         18.30       |
 | 1-layer TR 3AH 64 we 512 |   22922818  (34289920 frozen)       |         19.77      |
 | 1-layer TR 4AH 64 we 512 |   22824130  (34782400 frozen)       |        20.12      |
-| 1-layer TR 5AH 64 we 512 |   22824130  (34782400 frozen)       |        training      |
+| 1-layer TR 5AH 64 we 512 |       |              |
 
 
 &nbsp;
