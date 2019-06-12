@@ -40,7 +40,6 @@ from previous AH model (He distribution (and generator to the previous one))
 | 1-layer TR 1AH tot 512 dim  | 59181698            |       18.47            |
 | 1-layer TR 1AH masking 0   |   59181698         |        16.90          |
 | 1-layer TR 1AH 64 we 512   |   56425154         |         16.74          |
-| 1-layer TR 2AH 64 we 512 (freeze only encoder ah)   |   22824514  (33994432 frozen)       |         50k steps 18.11 100k steps 18.42   150k steps 18.44 200k steps 18.77      |
 | 1-layer TR 2AH 64 we 512 |   22726018  (34092928 frozen)       |         18.30       |
 | 1-layer TR 3AH 64 we 512 |   22922818  (34289920 frozen)       |         19.77      |
 | 1-layer TR 4AH 64 we 512 |   22824130  (34782400 frozen)       |        20.12      |
@@ -62,6 +61,7 @@ other experiments:
 
 | Model                  | number of parameters     | BLEU newstest2014 |
 | ---                    | ---                      |---                |
+| 1-layer TR 2AH 64 we 512 (freeze only encoder ah)   |   22824514  (33994432 frozen)       |         50k steps 18.11 100k steps 18.42   150k steps 18.44 200k steps 18.77      |
 | 1-layer TR 2AH 64 we 512 from previous 1 AH (identity matrix (and generator to the previous one)) |   22824514  (33994432 frozen)       |     150k steps   3.91          |
 | 1-layer TR 2AH 64 we 512 from previous 1 AH (xavier (as the default setting) (and generator to the previous one)) |   22824514  (33994432 frozen)       |      150k steps   9.44          |
 | 1-layer TR 2AH 64 we 512 from previous 1 AH (identity matrix and generator to xavier) |   22824514  (33994432 frozen)       |         100k steps 3.77          |
