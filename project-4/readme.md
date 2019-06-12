@@ -1,8 +1,7 @@
 (Ale’s current project, also Edinburgh people) Analyzing Transformer Heads. Pruning (Edinburgh) vs. growing (Ale) transformer heads to find an optimal number of non-redundant heads. Experiments on massive data on new CSC cluster.
 
 ### TODO
-* retrain 4rd ah 1 layer
-* retrain 4nd ah 6 layer
+* inspect 6-layer TR 1AH 64 we 512 
 
 ### Benchmark data
 * Train: *europarl, news-commentary, commoncrawl, rapid, paracrawl*  (allfiltered, shuffled, bpe35k from our wmt submission) 11555682 sentences (probably i will scale down to 2.5 M and re-run the training)
@@ -30,7 +29,7 @@ from previous AH model (He distribution (and generator to the previous one))
 | 1-layer LSTM           | 57860738                 |       21.71            |
 | 6-layer TR 8AH tot 512 (default)    |   95963778         |    25.91               |
 | 6-layer TR-BIG 16AH tot 1024 (default)    |   279972994         |   training               |
-| 6-layer TR 8AH tot 512 (splitted ah)    |   95963778         |    training             |
+| 6-layer TR 8AH tot 512 (splitted ah)    |   95963778         |    26.00             |
 | 6-layer TR 1AH masking 0    |   95963778         |          24.47         |
 | 6-layer TR 1AH 64 we 512    |   79424514         |          24.04         |
 | 6-layer TR 2AH 64 we 512   |   46709378   (35077888 frozen)      |          25.84         |
@@ -40,11 +39,10 @@ from previous AH model (He distribution (and generator to the previous one))
 | 1-layer TR 1AH tot 512 dim  | 59181698            |       18.47            |
 | 1-layer TR 1AH masking 0   |   59181698         |        16.90          |
 | 1-layer TR 1AH 64 we 512   |   56425154         |         16.74          |
-| 1-layer TR 2AH 64 we 512 (freeze only encoder ah)   |   22824514  (33994432 frozen)       |         50k steps 18.11 100k steps 18.42   150k steps 18.44 200k steps 18.77      |
 | 1-layer TR 2AH 64 we 512 |   22726018  (34092928 frozen)       |         18.30       |
 | 1-layer TR 3AH 64 we 512 |   22922818  (34289920 frozen)       |         19.77      |
 | 1-layer TR 4AH 64 we 512 |   22824130  (34782400 frozen)       |        20.12      |
-| 1-layer TR 5AH 64 we 512 |   22922434 (35077888)    |      training        |
+| 1-layer TR 5AH 64 we 512 |   22922434 (35077888 frozen)    |      20.46        |
 
 
 &nbsp;
@@ -62,6 +60,7 @@ other experiments:
 
 | Model                  | number of parameters     | BLEU newstest2014 |
 | ---                    | ---                      |---                |
+| 1-layer TR 2AH 64 we 512 (freeze only encoder ah)   |   22824514  (33994432 frozen)       |         50k steps 18.11 100k steps 18.42   150k steps 18.44 200k steps 18.77      |
 | 1-layer TR 2AH 64 we 512 from previous 1 AH (identity matrix (and generator to the previous one)) |   22824514  (33994432 frozen)       |     150k steps   3.91          |
 | 1-layer TR 2AH 64 we 512 from previous 1 AH (xavier (as the default setting) (and generator to the previous one)) |   22824514  (33994432 frozen)       |      150k steps   9.44          |
 | 1-layer TR 2AH 64 we 512 from previous 1 AH (identity matrix and generator to xavier) |   22824514  (33994432 frozen)       |         100k steps 3.77          |
