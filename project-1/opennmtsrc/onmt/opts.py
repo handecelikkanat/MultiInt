@@ -586,6 +586,8 @@ def translate_opts(parser):
     group.add('--output', '-output', default='pred.txt',
               help="Path to output the predictions (each line will "
                    "be the decoded sequence")
+    group.add('--representations_file', '-representations_file', default='representations.pickle',
+              help="Path to the pickled representations file")
     group.add('--report_bleu', '-report_bleu', action='store_true',
               help="Report bleu score after translation, "
                    "call tools/multi-bleu.perl on command line")

@@ -6,6 +6,7 @@ import os
 import math
 import time
 from itertools import count
+import pickle
 
 import torch
 
@@ -36,6 +37,7 @@ def build_translator(opt, report_score=True, logger=None, out_file=None):
         model_opt,
         global_scorer=scorer,
         out_file=out_file,
+        representations_file=opt.representations_file,
         report_score=report_score,
         logger=logger
     )
@@ -111,6 +113,7 @@ class Translator(object):
             copy_attn=False,
             global_scorer=None,
             out_file=None,
+            representations_file=None,
             report_score=True,
             logger=None,
             seed=-1):
@@ -165,6 +168,7 @@ class Translator(object):
             raise ValueError(
                 "Coverage penalty requires an attentional decoder.")
         self.out_file = out_file
+        self.representations_file = representations_file
         self.report_score = report_score
         self.logger = logger
 
@@ -192,6 +196,7 @@ class Translator(object):
             model_opt,
             global_scorer=None,
             out_file=None,
+            representations_file=None,
             report_score=True,
             logger=None):
         """Alternate constructor.
@@ -240,6 +245,7 @@ class Translator(object):
             copy_attn=model_opt.copy_attn,
             global_scorer=global_scorer,
             out_file=out_file,
+            representations_file=representations_file,
             report_score=report_score,
             logger=logger,
             seed=opt.seed)
@@ -325,11 +331,19 @@ class Translator(object):
 
         start_time = time.time()
 
+        #+HANDE: FIXME
+        representations_all = dict()
+        #-HANDE
+
         for batch in data_iter:
             batch_data = self.translate_batch(
                 batch, data.src_vocabs, attn_debug
             )
-            translations = xlation_builder.from_batch(batch_data)
+
+            #+HANDE: FIXME
+            translations, representations = xlation_builder.from_batch(batch_data)
+            representations_all.update(representations)
+            #-HANDE
 
             for trans in translations:
                 all_scores += [trans.pred_scores[:self.n_best]]
@@ -376,6 +390,10 @@ class Translator(object):
                         self.logger.info(output)
                     else:
                         os.write(1, output.encode('utf-8'))
+
+        #+HANDE: FIXME
+        pickle.dump(representations_all, open(self.representations_file, 'wb'))
+        #-HANDE
 
         end_time = time.time()
 
@@ -526,8 +544,11 @@ class Translator(object):
         src, src_lengths = batch.src if isinstance(batch.src, tuple) \
                            else (batch.src, None)
 
-        enc_states, memory_bank, src_lengths = self.model.encoder(
-            src, src_lengths)
+        #+HANDE
+        # Original:
+        enc_states, memory_bank, src_lengths = self.model.encoder(src, src_lengths)
+        #-HANDE
+
         if src_lengths is None:
             assert not isinstance(memory_bank, tuple), \
                 'Ensemble decoding only supported for text data'
@@ -611,8 +632,13 @@ class Translator(object):
         beam_size = self.beam_size
         batch_size = batch.batch_size
 
+
         # (1) Run the encoder on the src.
+        #+HANDE
+        # Original:
         src, enc_states, memory_bank, src_lengths = self._run_encoder(batch)
+        #-HANDE
+
         self.model.decoder.init_state(src, memory_bank, enc_states)
 
         results = {
@@ -622,7 +648,12 @@ class Translator(object):
             "batch": batch,
             "gold_score": self._gold_score(
                 batch, memory_bank, src_lengths, src_vocabs, use_src_map,
-                enc_states, batch_size, src)}
+                enc_states, batch_size, src),
+
+            #+HANDE
+            "embeddings": enc_states
+            #-HANDE
+        }
 
         # (2) Repeat src objects `beam_size` times.
         # We use batch_size x beam_size

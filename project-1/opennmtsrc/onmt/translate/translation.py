@@ -62,6 +62,8 @@ class TranslationBuilder(object):
                len(translation_batch["predictions"]))
         batch_size = batch.batch_size
 
+        embeddings = translation_batch["embeddings"]
+
         preds, pred_score, attn, gold_score, indices = list(zip(
             *sorted(zip(translation_batch["predictions"],
                         translation_batch["scores"],
@@ -80,6 +82,7 @@ class TranslationBuilder(object):
             if self.has_tgt else None
 
         translations = []
+        representations = dict()
         for b in range(batch_size):
             if self._has_text_src:
                 src_vocab = self.data.src_vocabs[inds[b]] \
@@ -105,9 +108,17 @@ class TranslationBuilder(object):
                 src_raw, pred_sents, attn[b], pred_score[b],
                 gold_sent, gold_score[b]
             )
-            translations.append(translation)
 
-        return translations
+            representation = Representation(
+                src[:, b] if src is not None else None,
+                src_raw, embeddings[0:len(src_raw), b, :], pred_sents, attn[b], pred_score[b],
+                gold_sent, gold_score[b]
+            ).to_dict()
+
+            translations.append(translation)
+            representations.update(representation)
+
+        return translations, representations
 
 
 class Translation(object):
@@ -160,3 +171,36 @@ class Translation(object):
                 msg.append("[{:.4f}] {}\n".format(score, sent))
 
         return "".join(msg)
+
+
+class Representation(object):
+    """Container for a representation.
+
+    Attributes:
+        src (LongTensor): Source word IDs.
+        src_raw (List[str]): Raw source words.
+        embeddings: Embedding vector corresponding to src_raw
+        pred_sents (List[List[str]]): Words from the n-best translations.
+        pred_scores (List[List[float]]): Log-probs of n-best translations.
+        attns (List[FloatTensor]) : Attention distribution for each
+            translation.
+        gold_sent (List[str]): Words from gold translation.
+        gold_score (List[float]): Log-prob of gold translation.
+    """
+
+    __slots__ = ["src", "src_raw", "embeddings", "pred_sents", "attns", "pred_scores",
+                 "gold_sent", "gold_score"]
+
+    def __init__(self, src, src_raw, embeddings, pred_sents,
+                 attn, pred_scores, tgt_sent, gold_score):
+        self.src = src
+        self.src_raw = src_raw
+        self.embeddings = embeddings
+        self.pred_sents = pred_sents
+        self.attns = attn
+
+    def to_dict(self):
+        sentence = " ".join(self.src_raw)
+        return {sentence: {'tokens': self.src_raw,
+                           'embeddings': self.embeddings.numpy(),
+                           'enc_self_attention_weights': self.attns}}
