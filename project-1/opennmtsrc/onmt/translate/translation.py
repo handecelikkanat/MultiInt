@@ -85,7 +85,7 @@ class TranslationBuilder(object):
             if self.has_tgt else None
 
         translations = []
-        representations = dict()
+        representations = []
         for b in range(batch_size):
             if self._has_text_src:
                 src_vocab = self.data.src_vocabs[inds[b]] \
@@ -125,7 +125,7 @@ class TranslationBuilder(object):
             ).to_dict()
 
             translations.append(translation)
-            representations.update(representation)
+            representations.append(representation)
 
         return translations, representations
 
@@ -216,3 +216,10 @@ class Representation(object):
                            'embeddings': self.embeddings.numpy(),
                            'enc_representations': self.enc_representations.numpy(),
                            'enc_self_attention_weights': self.attns}}
+
+    def to_list(self):
+        sentence = " ".join(self.src_raw)
+        return           [ {'tokens': self.src_raw,
+                           'embeddings': self.embeddings.numpy(),
+                           'enc_representations': self.enc_representations.numpy(),
+                           'enc_self_attention_weights': self.attns}]

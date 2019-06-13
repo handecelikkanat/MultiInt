@@ -332,7 +332,7 @@ class Translator(object):
         start_time = time.time()
 
         #+HANDE: FIXME
-        representations_all = dict()
+        representations_all = []
         #-HANDE
 
         for batch in data_iter:
@@ -342,7 +342,7 @@ class Translator(object):
 
             #+HANDE: FIXME
             translations, representations = xlation_builder.from_batch(batch_data)
-            representations_all.update(representations)
+            representations_all.append(representations)
             #-HANDE
 
             for trans in translations:
