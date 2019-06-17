@@ -6,6 +6,7 @@ import os
 import math
 import time
 from itertools import count
+import pickle
 
 import torch
 
@@ -273,7 +274,8 @@ class Translator(object):
             src_dir=None,
             batch_size=None,
             attn_debug=False,
-            phrase_table=""):
+            phrase_table="",
+            shard_id=None):
         """Translate content of ``src`` and get gold scores from ``tgt``.
 
         Args:
@@ -390,6 +392,11 @@ class Translator(object):
                     else:
                         os.write(1, output.encode('utf-8'))
 
+
+        #+HANDE: FIXME
+        pickle.dump(representations_shard, open(self.representations_file + '.' + str(shard_id), 'wb'))
+        #-HANDE
+
         end_time = time.time()
 
         if self.report_score:
@@ -420,7 +427,7 @@ class Translator(object):
             json.dump(self.translator.beam_accum,
                       codecs.open(self.dump_beam, 'w', 'utf-8'))
 
-        return representations_shard, all_scores, all_predictions
+        return all_scores, all_predictions
 
     def _translate_random_sampling(
             self,
