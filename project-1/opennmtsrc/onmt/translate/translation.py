@@ -213,13 +213,13 @@ class Representation(object):
     def to_dict(self):
         sentence = " ".join(self.src_raw)
         return {sentence: {'tokens': self.src_raw,
-                           'embeddings': self.embeddings.numpy(),
-                           'enc_representations': self.enc_representations.numpy(),
+                           'embeddings': self.embeddings.cpu().numpy(),
+                           'enc_representations': self.enc_representations.cpu().numpy(),
                            'enc_self_attention_weights': self.attns}}
 
     def to_list(self):
         sentence = " ".join(self.src_raw)
         return           [{'tokens': self.src_raw,
-                           'embeddings': self.embeddings.numpy(),
-                           'enc_representations': self.enc_representations.numpy(),
+                           'embeddings': self.embeddings.cpu().numpy(),
+                           'enc_representations': self.enc_representations.cpu().numpy(),
                            'enc_self_attention_weights': self.attns}]
