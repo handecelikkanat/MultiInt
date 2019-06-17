@@ -22,6 +22,18 @@ Testing last checkpoint (200k training steps).
 
 BLEU+case.mixed+numrefs.1+smooth.exp+tok.13a+version.1.2.11
 
+
+learning which AH turn off:
+
+
+| Model                  | number of parameters     | BLEU newstest2014 |
+| ---                    | ---                      |---                |
+| 6-layer TR 8AH tot 512 (default)    |   95963778         |    50k 23.62 100k 24.83 150k 26.12 200k 25.91               |
+| 6-layer TR 8AH tot 512 (DET)    |   102316728         |    50k 23.84               |
+
+
+
+
 from previous AH model (He distribution (and generator to the previous one))
 
 | Model                  | number of parameters     | BLEU newstest2014 |
