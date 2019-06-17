@@ -30,6 +30,8 @@ learning which AH turn off:
 | ---                    | ---                      |---                |
 | 6-layer TR 8AH tot 512 (default)    |   95963778         |    50k 23.62 100k 24.83 150k 26.12 200k 25.91               |
 | 6-layer TR 8AH tot 512 (DET)    |   102316728         |    50k 23.84               |
+| 2-layer TR 8AH tot 512 (default)    |   66538114         |    training               |
+
 
 
 
