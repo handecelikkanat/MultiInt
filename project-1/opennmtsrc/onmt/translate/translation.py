@@ -62,7 +62,10 @@ class TranslationBuilder(object):
                len(translation_batch["predictions"]))
         batch_size = batch.batch_size
 
+        #+HANDE
         embeddings = translation_batch["embeddings"]
+        enc_representations = translation_batch["enc_representations"]
+        #-HANDE
 
         preds, pred_score, attn, gold_score, indices = list(zip(
             *sorted(zip(translation_batch["predictions"],
@@ -82,7 +85,7 @@ class TranslationBuilder(object):
             if self.has_tgt else None
 
         translations = []
-        representations = dict()
+        representations = []
         for b in range(batch_size):
             if self._has_text_src:
                 src_vocab = self.data.src_vocabs[inds[b]] \
@@ -111,12 +114,18 @@ class TranslationBuilder(object):
 
             representation = Representation(
                 src[:, b] if src is not None else None,
-                src_raw, embeddings[0:len(src_raw), b, :], pred_sents, attn[b], pred_score[b],
-                gold_sent, gold_score[b]
-            ).to_dict()
+                src_raw,
+                enc_representations[0:len(src_raw), b, :],
+                embeddings[0:len(src_raw), b, :],
+                pred_sents,
+                attn[b],
+                pred_score[b],
+                gold_sent,
+                gold_score[b]
+            ).to_list()
 
             translations.append(translation)
-            representations.update(representation)
+            representations.extend(representation)
 
         return translations, representations
 
@@ -179,6 +188,7 @@ class Representation(object):
     Attributes:
         src (LongTensor): Source word IDs.
         src_raw (List[str]): Raw source words.
+        enc_representations: Encodings of each word (=Output of the translation model, called memory_bank in ONMT)
         embeddings: Embedding vector corresponding to src_raw
         pred_sents (List[List[str]]): Words from the n-best translations.
         pred_scores (List[List[float]]): Log-probs of n-best translations.
@@ -188,13 +198,14 @@ class Representation(object):
         gold_score (List[float]): Log-prob of gold translation.
     """
 
-    __slots__ = ["src", "src_raw", "embeddings", "pred_sents", "attns", "pred_scores",
+    __slots__ = ["src", "src_raw", "enc_representations", "embeddings", "pred_sents", "attns", "pred_scores",
                  "gold_sent", "gold_score"]
 
-    def __init__(self, src, src_raw, embeddings, pred_sents,
+    def __init__(self, src, src_raw, enc_representations, embeddings, pred_sents,
                  attn, pred_scores, tgt_sent, gold_score):
         self.src = src
         self.src_raw = src_raw
+        self.enc_representations = enc_representations
         self.embeddings = embeddings
         self.pred_sents = pred_sents
         self.attns = attn
@@ -203,4 +214,12 @@ class Representation(object):
         sentence = " ".join(self.src_raw)
         return {sentence: {'tokens': self.src_raw,
                            'embeddings': self.embeddings.numpy(),
+                           'enc_representations': self.enc_representations.numpy(),
                            'enc_self_attention_weights': self.attns}}
+
+    def to_list(self):
+        sentence = " ".join(self.src_raw)
+        return           [{'tokens': self.src_raw,
+                           'embeddings': self.embeddings.numpy(),
+                           'enc_representations': self.enc_representations.numpy(),
+                           'enc_self_attention_weights': self.attns}]

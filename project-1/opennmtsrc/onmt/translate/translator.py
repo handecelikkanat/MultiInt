@@ -332,7 +332,7 @@ class Translator(object):
         start_time = time.time()
 
         #+HANDE: FIXME
-        representations_all = dict()
+        representations_all = []
         #-HANDE
 
         for batch in data_iter:
@@ -342,7 +342,7 @@ class Translator(object):
 
             #+HANDE: FIXME
             translations, representations = xlation_builder.from_batch(batch_data)
-            representations_all.update(representations)
+            representations_all.extend(representations)
             #-HANDE
 
             for trans in translations:
@@ -651,7 +651,10 @@ class Translator(object):
                 enc_states, batch_size, src),
 
             #+HANDE
-            "embeddings": enc_states
+            #FIXME: Check that _gold_score() doesn't mess with these values!!
+            #FIXME: Check that enc_states are really embeddings and memory_bank is really encodings
+            "embeddings": enc_states,
+            "enc_representations": memory_bank
             #-HANDE
         }
 
