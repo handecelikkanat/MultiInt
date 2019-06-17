@@ -24,7 +24,6 @@ def main(opt):
     shard_pairs = zip(src_shards, tgt_shards)
 
     # +HANDE: FIXME
-    representations_all = []
     for i, (src_shard, tgt_shard) in enumerate(shard_pairs):
         logger.info("Translating shard %d." % i)
         representations_shard = translator.translate(
@@ -34,9 +33,9 @@ def main(opt):
             batch_size=opt.batch_size,
             attn_debug=opt.attn_debug
             )
-        representations_all.extend(representations_shard)
 
-    pickle.dump(representations_all, open(opt.representations_file, 'wb'))
+        pickle.dump(representations_shard, open('opt.representations_file' + '.' + str(i), 'wb'))
+
     # -HANDE
 
 
