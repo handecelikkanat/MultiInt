@@ -122,7 +122,7 @@ class TranslationBuilder(object):
                 pred_score[b],
                 gold_sent,
                 gold_score[b]
-            ).to_dict()
+            ).to_list()
 
             translations.append(translation)
             representations.extend(representation)
