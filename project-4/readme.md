@@ -21,6 +21,7 @@ attn = batch, ah, seq, seq <- individual attention value
 
 context_original = batch, ah, seq, dim <- individual attention vector
 
+visualization tool: https://github.com/jessevig/bertviz
 
 ## Scores
 
