@@ -215,7 +215,7 @@ class Representation(object):
         return {sentence: {'tokens': self.src_raw,
                            'embeddings': self.embeddings.cpu().numpy(),
                            'enc_representations': self.enc_representations.cpu().numpy()
-                           #'enc_self_attention_weights': self.attns
+                           'enc_self_attention_weights': self.attns
                           }}
 
     def to_list(self):
@@ -223,5 +223,5 @@ class Representation(object):
         return           [{'tokens': self.src_raw,
                            'embeddings': self.embeddings.cpu().numpy(),
                            'enc_representations': self.enc_representations.cpu().numpy()
-                           #'enc_self_attention_weights': self.attns
+                           'enc_self_attention_weights': self.attns
                            }]
