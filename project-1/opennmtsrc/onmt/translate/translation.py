@@ -214,7 +214,7 @@ class Representation(object):
         sentence = " ".join(self.src_raw)
         return {sentence: {'tokens': self.src_raw,
                            'embeddings': self.embeddings.cpu().numpy(),
-                           'enc_representations': self.enc_representations.cpu().numpy()
+                           'enc_representations': self.enc_representations.cpu().numpy(),
                            'enc_self_attention_weights': self.attns
                           }}
 
@@ -222,6 +222,6 @@ class Representation(object):
         sentence = " ".join(self.src_raw)
         return           [{'tokens': self.src_raw,
                            'embeddings': self.embeddings.cpu().numpy(),
-                           'enc_representations': self.enc_representations.cpu().numpy()
+                           'enc_representations': self.enc_representations.cpu().numpy(),
                            'enc_self_attention_weights': self.attns
                            }]
