@@ -16,18 +16,38 @@ python  $opennmt/train.py -data $trainData -save_model $savemodel -layers 1 -rnn
 
 python  $opennmt/train.py -data $trainData -save_model $savemodel -layers 1 -rnn_size 64 -word_vec_size 64 -transformer_ff 2048 -heads 1  -encoder_type transformer -decoder_type transformer -position_encoding -train_steps 200000  -max_generator_batches 2 -dropout 0.1 -batch_size 4096 -batch_type tokens -normalization tokens  -accum_count 2 -optim adam -adam_beta2 0.998 -decay_method noam -warmup_steps 8000 -learning_rate 2 -max_grad_norm 0 -param_init 0  -param_init_glorot -label_smoothing 0.1 -valid_steps 25000 -save_checkpoint_steps 50000 -world_size 1 -gpu_ranks 0
 
+
+attn = batch, ah, seq, seq <- individual attention value
+
+context_original = batch, ah, seq, dim <- individual attention vector
+
+
 ## Scores
 
 Testing last checkpoint (200k training steps).
 
 BLEU+case.mixed+numrefs.1+smooth.exp+tok.13a+version.1.2.11
 
+
+learning which AH turn off:
+
+
+| Model                  | number of parameters     | BLEU newstest2014 |
+| ---                    | ---                      |---                |
+| 6-layer TR 8AH tot 512 (default)    |   95963778         |    50k 23.62 100k 24.83 150k 26.12 200k 25.91               |
+| 6-layer TR 8AH tot 512 (DET)    |   102316728         |    50k 23.84               |
+| 2-layer TR 8AH tot 512 (default)    |   66538114         |    training               |
+
+
+
+
+
 from previous AH model (He distribution (and generator to the previous one))
 
 | Model                  | number of parameters     | BLEU newstest2014 |
 | ---                    | ---                      |---                |
 | 1-layer LSTM           | 57860738                 |       21.71            |
-| 6-layer TR 8AH tot 512 (default)    |   95963778         |    25.91               |
+| 6-layer TR 8AH tot 512 (default)    |   95963778         |    50k 23.62 100k 24.83 150k 26.12 200k 25.91               |
 | 6-layer TR-BIG 16AH tot 1024 (default)    |   279972994         |   training               |
 | 6-layer TR 8AH tot 512 (splitted ah)    |   95963778         |    26.00             |
 | 6-layer TR 1AH masking 0    |   95963778         |          24.47         |
