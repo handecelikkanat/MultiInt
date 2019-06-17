@@ -27,7 +27,7 @@ from previous AH model (He distribution (and generator to the previous one))
 | Model                  | number of parameters     | BLEU newstest2014 |
 | ---                    | ---                      |---                |
 | 1-layer LSTM           | 57860738                 |       21.71            |
-| 6-layer TR 8AH tot 512 (default)    |   95963778         |    25.91               |
+| 6-layer TR 8AH tot 512 (default)    |   95963778         |    50k 23.62 100k 24.83 150k 26.12 200k 25.91               |
 | 6-layer TR-BIG 16AH tot 1024 (default)    |   279972994         |   training               |
 | 6-layer TR 8AH tot 512 (splitted ah)    |   95963778         |    26.00             |
 | 6-layer TR 1AH masking 0    |   95963778         |          24.47         |
