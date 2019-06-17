@@ -2,6 +2,7 @@
 from __future__ import unicode_literals, print_function
 
 import torch
+import numpy as np
 from onmt.inputters.text_dataset import TextMultiField
 
 
@@ -210,18 +211,15 @@ class Representation(object):
         self.pred_sents = pred_sents
         self.attns = attn
 
-    def to_dict(self):
-        sentence = " ".join(self.src_raw)
-        return {sentence: {'tokens': self.src_raw,
-                           'embeddings': self.embeddings.cpu().numpy(),
-                           'enc_representations': self.enc_representations.cpu().numpy(),
-                           'enc_self_attention_weights': self.attns
-                          }}
-
     def to_list(self):
         sentence = " ".join(self.src_raw)
+        encodings = self.enc_representations.cpu().numpy()
+        sent_len = len(self.src_raw)
+        encodings_final = encodings[sent_len-1, :]
+        encodings_maxpool = np.amax(encodings, axis=0)
         return           [{'tokens': self.src_raw,
-                           'embeddings': self.embeddings.cpu().numpy(),
-                           'enc_representations': self.enc_representations.cpu().numpy(),
+                           'embedding': self.embeddings.cpu().numpy(),
+                           'encodings_final': encodings_final,
+                           'encodings_maxpool': encodings_maxpool,
                            'enc_self_attention_weights': self.attns
                            }]
