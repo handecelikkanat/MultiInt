@@ -6,7 +6,6 @@ import os
 import math
 import time
 from itertools import count
-import pickle
 
 import torch
 
@@ -332,7 +331,7 @@ class Translator(object):
         start_time = time.time()
 
         #+HANDE: FIXME
-        representations_all = []
+        representations_shard = []
         #-HANDE
 
         for batch in data_iter:
@@ -341,8 +340,8 @@ class Translator(object):
             )
 
             #+HANDE: FIXME
-            translations, representations = xlation_builder.from_batch(batch_data)
-            representations_all.extend(representations)
+            translations, representations_batch = xlation_builder.from_batch(batch_data)
+            representations_shard.extend(representations_batch)
             #-HANDE
 
             for trans in translations:
@@ -391,10 +390,6 @@ class Translator(object):
                     else:
                         os.write(1, output.encode('utf-8'))
 
-        #+HANDE: FIXME
-        pickle.dump(representations_all, open(self.representations_file, 'wb'))
-        #-HANDE
-
         end_time = time.time()
 
         if self.report_score:
@@ -424,7 +419,8 @@ class Translator(object):
             import json
             json.dump(self.translator.beam_accum,
                       codecs.open(self.dump_beam, 'w', 'utf-8'))
-        return all_scores, all_predictions
+
+        return representations_shard, all_scores, all_predictions
 
     def _translate_random_sampling(
             self,
