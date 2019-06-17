@@ -342,7 +342,7 @@ class Translator(object):
 
             #+HANDE: FIXME
             translations, representations = xlation_builder.from_batch(batch_data)
-            representations_all.append(representations)
+            representations_all.extend(representations)
             #-HANDE
 
             for trans in translations:

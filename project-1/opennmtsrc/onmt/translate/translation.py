@@ -125,7 +125,7 @@ class TranslationBuilder(object):
             ).to_dict()
 
             translations.append(translation)
-            representations.append(representation)
+            representations.extend(representation)
 
         return translations, representations
 
@@ -219,7 +219,7 @@ class Representation(object):
 
     def to_list(self):
         sentence = " ".join(self.src_raw)
-        return           [ {'tokens': self.src_raw,
+        return           [{'tokens': self.src_raw,
                            'embeddings': self.embeddings.numpy(),
                            'enc_representations': self.enc_representations.numpy(),
                            'enc_self_attention_weights': self.attns}]
