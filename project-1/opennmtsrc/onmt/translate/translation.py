@@ -99,7 +99,7 @@ class TranslationBuilder(object):
             pred_sents = [self._build_target_tokens(
                 src[:, b] if src is not None else None,
                 src_vocab, src_raw,
-                preds[b][n], attn[b][n])
+                preds[b][n], context_attention[b][n])
                 for n in range(self.n_best)]
             gold_sent = None
             if tgt is not None:
@@ -110,7 +110,7 @@ class TranslationBuilder(object):
 
             translation = Translation(
                 src[:, b] if src is not None else None,
-                src_raw, pred_sents, attn[b], pred_score[b],
+                src_raw, pred_sents, context_attention[b], pred_score[b],
                 gold_sent, gold_score[b]
             )
 
@@ -122,7 +122,7 @@ class TranslationBuilder(object):
                 pred_sents,
                 context_attention[b],
                 enc_self_attention[b],
-                dec_self_attention[b],
+                None, #FIXME: dec_self_attention[b]
                 pred_score[b],
                 gold_sent,
                 gold_score[b]
@@ -142,7 +142,7 @@ class Translation(object):
         src_raw (List[str]): Raw source words.
         pred_sents (List[List[str]]): Words from the n-best translations.
         pred_scores (List[List[float]]): Log-probs of n-best translations.
-        attns (List[FloatTensor]) : Attention distribution for each
+        context_attention (List[FloatTensor]) : Attention distribution for each
             translation.
         gold_sent (List[str]): Words from gold translation.
         gold_score (List[float]): Log-prob of gold translation.
