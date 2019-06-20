@@ -549,7 +549,7 @@ class Translator(object):
 
         #+HANDE
         # Original:
-        enc_states, memory_bank, src_lengths = self.model.encoder(src, src_lengths)
+        enc_states, memory_bank, enc_self_attentions, src_lengths = self.model.encoder(src, src_lengths)
         #-HANDE
 
         if src_lengths is None:
@@ -559,7 +559,7 @@ class Translator(object):
                                .type_as(memory_bank) \
                                .long() \
                                .fill_(memory_bank.size(0))
-        return src, enc_states, memory_bank, src_lengths
+        return src, enc_states, memory_bank, enc_self_attentions, src_lengths
 
     def _decode_and_generate(
             self,
@@ -581,7 +581,7 @@ class Translator(object):
         # and [src_len, batch, hidden] as memory_bank
         # in case of inference tgt_len = 1, batch = beam times batch_size
         # in case of Gold Scoring tgt_len = actual length, batch = 1 batch
-        dec_out, dec_attn = self.model.decoder(
+        dec_out, dec_attn, dec_self_attentions  = self.model.decoder(
             decoder_in, memory_bank, memory_lengths=memory_lengths, step=step
         )
 
@@ -616,7 +616,7 @@ class Translator(object):
             log_probs = scores.squeeze(0).log()
             # returns [(batch_size x beam_size) , vocab ] when 1 step
             # or [ tgt_len, batch_size, vocab ] when full sentence
-        return log_probs, attn
+        return log_probs, attn, dec_self_attentions
 
     def _translate_batch(
             self,
@@ -639,7 +639,7 @@ class Translator(object):
         # (1) Run the encoder on the src.
         #+HANDE
         # Original:
-        src, enc_states, memory_bank, src_lengths = self._run_encoder(batch)
+        src, enc_states, memory_bank, enc_self_attentions, src_lengths = self._run_encoder(batch)
         #-HANDE
 
         self.model.decoder.init_state(src, memory_bank, enc_states)
@@ -647,7 +647,6 @@ class Translator(object):
         results = {
             "predictions": None,
             "scores": None,
-            "attention": None,
             "batch": batch,
             "gold_score": self._gold_score(
                 batch, memory_bank, src_lengths, src_vocabs, use_src_map,
@@ -657,7 +656,10 @@ class Translator(object):
             #FIXME: Check that _gold_score() doesn't mess with these values!!
             #FIXME: Check that enc_states are really embeddings and memory_bank is really encodings
             "embeddings": enc_states,
-            "enc_representations": memory_bank
+            "enc_representations": memory_bank,
+            "context_attention": None,
+            "enc_self_attention": enc_self_attentions,
+            "dec_self_attention": None
             #-HANDE
         }
 
@@ -698,7 +700,7 @@ class Translator(object):
         for step in range(max_length):
             decoder_input = beam.current_predictions.view(1, -1, 1)
 
-            log_probs, attn = self._decode_and_generate(
+            log_probs, attn, dec_self_attentions = self._decode_and_generate(
                 decoder_input,
                 memory_bank,
                 batch,
@@ -735,7 +737,10 @@ class Translator(object):
 
         results["scores"] = beam.scores
         results["predictions"] = beam.predictions
-        results["attention"] = beam.attention
+        #+HANDE: FIXME
+        results["context_attention"] = beam.attention
+        results["dec_self_attention"] = None #FIXME: beam.dec_self_attentions
+        #-HANDE
         return results
 
     # This is left in the code for now, but unsued

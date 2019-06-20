@@ -222,8 +222,13 @@ class TransformerDecoder(DecoderBase):
         if self._copy:
             attns["copy"] = attn
 
+        #+HANDE
+        dec_self_attentions = [dec_layer.self_attn for dec_layer in self.transformer_layers]
+
         # TODO change the way attns is returned dict => list or tuple (onnx)
-        return dec_outs, attns
+        return dec_outs, attns, dec_self_attentions
+
+        #-HANDE
 
     def _init_cache(self, memory_bank):
         self.state["cache"] = {}

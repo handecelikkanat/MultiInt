@@ -66,12 +66,13 @@ class TranslationBuilder(object):
         #+HANDE
         embeddings = translation_batch["embeddings"]
         enc_representations = translation_batch["enc_representations"]
+        enc_self_attention = translation_batch["enc_self_attention"]
         #-HANDE
 
-        preds, pred_score, attn, gold_score, indices = list(zip(
+        preds, pred_score, context_attention, gold_score, indices = list(zip(
             *sorted(zip(translation_batch["predictions"],
                         translation_batch["scores"],
-                        translation_batch["attention"],
+                        translation_batch["context_attention"],
                         translation_batch["gold_score"],
                         batch.indices.data),
                     key=lambda x: x[-1])))
@@ -119,7 +120,9 @@ class TranslationBuilder(object):
                 enc_representations[0:len(src_raw), b, :],
                 embeddings[0:len(src_raw), b, :],
                 pred_sents,
-                attn[b],
+                context_attention[b],
+                enc_self_attention[b],
+                dec_self_attention[b],
                 pred_score[b],
                 gold_sent,
                 gold_score[b]
@@ -145,15 +148,19 @@ class Translation(object):
         gold_score (List[float]): Log-prob of gold translation.
     """
 
-    __slots__ = ["src", "src_raw", "pred_sents", "attns", "pred_scores",
+    __slots__ = ["src", "src_raw", "pred_sents", "context_attention",
+                 "enc_self_attention", "dec_self_attention", "pred_scores",
                  "gold_sent", "gold_score"]
 
     def __init__(self, src, src_raw, pred_sents,
-                 attn, pred_scores, tgt_sent, gold_score):
+                 context_attention, enc_self_attention, dec_self_attention,
+                 pred_scores, tgt_sent, gold_score):
         self.src = src
         self.src_raw = src_raw
         self.pred_sents = pred_sents
-        self.attns = attn
+        self.context_attention = context_attention
+        self.enc_self_attention = enc_self_attention
+        self.dec_self_attention = dec_self_attention
         self.pred_scores = pred_scores
         self.gold_sent = tgt_sent
         self.gold_score = gold_score
@@ -199,7 +206,8 @@ class Representation(object):
         gold_score (List[float]): Log-prob of gold translation.
     """
 
-    __slots__ = ["src", "src_raw", "enc_representations", "embeddings", "pred_sents", "attns", "pred_scores",
+    __slots__ = ["src", "src_raw", "enc_representations", "embeddings", "pred_sents", "context_attention",
+                 "enc_self_attention", "dec_self_attention", "pred_scores",
                  "gold_sent", "gold_score"]
 
     def __init__(self, src, src_raw, enc_representations, embeddings, pred_sents,
@@ -209,7 +217,9 @@ class Representation(object):
         self.enc_representations = enc_representations
         self.embeddings = embeddings
         self.pred_sents = pred_sents
-        self.attns = attn
+        self.context_attention = context_attention
+        self.enc_self_attention = enc_self_attention
+        self.dec_self_attention = dec_self_attention
 
     def to_list(self):
         sentence = " ".join(self.src_raw)
@@ -219,7 +229,10 @@ class Representation(object):
         encodings_maxpool = np.amax(encodings, axis=0)
         return           [{'tokens': self.src_raw,
                            #'embedding': self.embeddings.cpu().numpy(),
-                           'encodings_final': encodings_final.cpu().numpy(),
-                           'encodings_maxpool': encodings_maxpool.cpu().numpy(),
-                           'enc_self_attention_weights': self.attns
-                           }]
+                           'encodings_final': encodings_final,
+                           'encodings_maxpool': encodings_maxpool,
+                           'context_attention': self.context_attention,
+                           'enc_self_attention_weights': self.enc_self_attention
+                           #'dec_self_attention_weights': self.dec_self_attention
+                         }]
+

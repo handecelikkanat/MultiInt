@@ -127,7 +127,8 @@ class TransformerEncoder(EncoderBase):
             out = layer(out, mask)
         out = self.layer_norm(out)
 
-        return emb, out.transpose(0, 1).contiguous(), lengths
+        enc_self_attentions = [enc_layer.self_attn for enc_layer in self.transformer]
+        return emb, out.transpose(0, 1).contiguous(), enc_self_attentions, lengths
 
     def update_dropout(self, dropout):
         self.embeddings.update_dropout(dropout)
