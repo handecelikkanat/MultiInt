@@ -110,7 +110,11 @@ class TranslationBuilder(object):
 
             translation = Translation(
                 src[:, b] if src is not None else None,
-                src_raw, pred_sents, context_attention[b], pred_score[b],
+                src_raw, pred_sents,
+                context_attention[b],
+                enc_self_attention[b],
+                None,  # FIXME: dec_self_attention[b]
+                pred_score[b],
                 gold_sent, gold_score[b]
             )
 
