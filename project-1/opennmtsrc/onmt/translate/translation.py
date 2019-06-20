@@ -215,7 +215,8 @@ class Representation(object):
                  "gold_sent", "gold_score"]
 
     def __init__(self, src, src_raw, enc_representations, embeddings, pred_sents,
-                 attn, pred_scores, tgt_sent, gold_score):
+                 context_attention, enc_self_attention, dec_self_attention,
+                 pred_scores, tgt_sent, gold_score):
         self.src = src
         self.src_raw = src_raw
         self.enc_representations = enc_representations
