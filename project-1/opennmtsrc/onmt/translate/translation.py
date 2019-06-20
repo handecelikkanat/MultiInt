@@ -216,10 +216,10 @@ class Representation(object):
         encodings = self.enc_representations.cpu().numpy()
         sent_len = len(self.src_raw)
         encodings_final = encodings[sent_len-1, :]
-        encodings_maxpool = np.amax(encodings, axis=0)  
+        encodings_maxpool = np.amax(encodings, axis=0)
         return           [{'tokens': self.src_raw,
                            #'embedding': self.embeddings.cpu().numpy(),
-                           'encodings_final': encodings_final,
-                           'encodings_maxpool': encodings_maxpool,
+                           'encodings_final': encodings_final.cpu().numpy(),
+                           'encodings_maxpool': encodings_maxpool.cpu().numpy(),
                            'enc_self_attention_weights': self.attns
                            }]
