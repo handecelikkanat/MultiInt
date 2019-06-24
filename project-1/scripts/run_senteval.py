@@ -9,19 +9,16 @@ import logging
 import torch
 
 
-PATH_TO_DATA = './data'
+PATH_TO_SENTEVAL = '/Users/celikkan/Dropbox/WorkHNLP/FoTran/Github/SentEval'
+PATH_TO_DATA     = PATH_TO_SENTEVAL + '/data'
+PATH_TO_ONMT     ='/Users/celikkan/Dropbox/WorkHNLP/FoTran/Github/MultiInt/project-1/opennmtsrc'
 
-PATH_TO_SENTEVAL = '/wrk/vazquezc/DONOTREMOVE/git/SentEval'
-#PATH_TO_INFERSENT='/home/local/vazquezj/git/InferSent'
-PATH_TO_DATA = '/wrk/vazquezc/DONOTREMOVE/git/SentEval/data'
 
 # import SentEval
 sys.path.insert(0, PATH_TO_SENTEVAL)
 import senteval
 
-PATH_TO_ONMT='/wrk/vazquezc/DONOTREMOVE/git/OpenNMT-py-NI2_ALESSANDRO'
 sys.path.insert(0, PATH_TO_ONMT)
-
 import onmt.inputters as inputters
 from available_models import run_sentevalUtil
 from apply_bpe import BPE
