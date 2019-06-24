@@ -2,7 +2,6 @@
 Implementation of "Attention is All You Need"
 """
 
-import torch
 import torch.nn as nn
 
 from onmt.encoders.encoder import EncoderBase
@@ -46,10 +45,10 @@ class TransformerEncoderLayer(nn.Module):
             * outputs ``(batch_size, src_len, model_dim)``
         """
         input_norm = self.layer_norm(inputs)
-        context, layer_self_attn = self.self_attn(input_norm, input_norm, input_norm,
+        context, _ = self.self_attn(input_norm, input_norm, input_norm,
                                     mask=mask, type="self")
         out = self.dropout(context) + inputs
-        return self.feed_forward(out), layer_self_attn
+        return self.feed_forward(out)
 
     def update_dropout(self, dropout):
         self.self_attn.update_dropout(dropout)
@@ -99,7 +98,6 @@ class TransformerEncoder(EncoderBase):
                 max_relative_positions=max_relative_positions)
              for i in range(num_layers)])
         self.layer_norm = nn.LayerNorm(d_model, eps=1e-6)
-        self.num_layers = num_layers
 
     @classmethod
     def from_opt(cls, opt, embeddings):
@@ -125,14 +123,12 @@ class TransformerEncoder(EncoderBase):
         padding_idx = self.embeddings.word_padding_idx
         mask = words.data.eq(padding_idx).unsqueeze(1)  # [B, 1, T]
         # Run the forward pass of every layer of the tranformer.
-
-        enc_self_attentions = torch.Tensor(w_batch, w_len, w_len, self.num_layers)
-        for i, layer in enumerate(self.transformer):
-            out, layer_self_attn = layer(out, mask)
-            enc_self_attentions[:,:,:,i] = layer_self_attn
+        for layer in self.transformer:
+            out = layer(out, mask)
         out = self.layer_norm(out)
 
-        return emb, out.transpose(0, 1).contiguous(), enc_self_attentions.contiguous(), lengths
+        enc_self_attentions = [enc_layer.self_attn for enc_layer in self.transformer]
+        return emb, out.transpose(0, 1).contiguous(), enc_self_attentions, lengths
 
     def update_dropout(self, dropout):
         self.embeddings.update_dropout(dropout)

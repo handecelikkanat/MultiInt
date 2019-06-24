@@ -700,7 +700,7 @@ class Translator(object):
         for step in range(max_length):
             decoder_input = beam.current_predictions.view(1, -1, 1)
 
-            log_probs, context_attentions, dec_self_attentions = self._decode_and_generate(
+            log_probs, attn, dec_self_attentions = self._decode_and_generate(
                 decoder_input,
                 memory_bank,
                 batch,
@@ -709,8 +709,6 @@ class Translator(object):
                 src_map=src_map,
                 step=step,
                 batch_offset=beam._batch_offset)
-
-            attn = context_attentions[:,:,:,-1].squeeze() #Take only the final-layer attention for the following
 
             beam.advance(log_probs, attn)
             any_beam_is_finished = beam.is_finished.any()

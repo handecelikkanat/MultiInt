@@ -175,13 +175,9 @@ class BeamSearch(DecodeStrategy):
                     self._prev_penalty = torch.zeros_like(self.topk_log_probs)
                     self._coverage = current_attn
             else:
-                print('self.alive_attn 1:', self.alive_attn.shape)
                 self.alive_attn = self.alive_attn.index_select(
                     1, self.select_indices)
-                print('self.alive_attn 2:', self.alive_attn.shape)
-                print('current attn', current_attn.shape)
                 self.alive_attn = torch.cat([self.alive_attn, current_attn], 0)
-                print('self.alive_attn 3:', self.alive_attn.shape)
                 # update global state (step > 1)
                 if self._cov_pen:
                     self._coverage = self._coverage.index_select(
@@ -275,7 +271,6 @@ class BeamSearch(DecodeStrategy):
             inp_seq_len = self.alive_attn.size(-1)
             self.alive_attn = attention.index_select(1, non_finished) \
                 .view(step - 1, _B_new * self.beam_size, inp_seq_len)
-            print('self.alive_attn 4:', self.alive_attn.shape)
             if self._cov_pen:
                 self._coverage = self._coverage \
                     .view(1, _B_old, self.beam_size, inp_seq_len) \
