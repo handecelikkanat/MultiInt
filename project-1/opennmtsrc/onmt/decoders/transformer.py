@@ -69,24 +69,24 @@ class TransformerDecoderLayer(nn.Module):
         input_norm = self.layer_norm_1(inputs)
 
         if isinstance(self.self_attn, MultiHeadedAttention):
-            query, attn = self.self_attn(input_norm, input_norm, input_norm,
+            query, layer_self_attention = self.self_attn(input_norm, input_norm, input_norm,
                                          mask=dec_mask,
                                          layer_cache=layer_cache,
                                          type="self")
         elif isinstance(self.self_attn, AverageAttention):
-            query, attn = self.self_attn(input_norm, mask=dec_mask,
+            query, layer_self_attention = self.self_attn(input_norm, mask=dec_mask,
                                          layer_cache=layer_cache, step=step)
 
         query = self.drop(query) + inputs
 
         query_norm = self.layer_norm_2(query)
-        mid, attn = self.context_attn(memory_bank, memory_bank, query_norm,
+        mid, layer_context_attention = self.context_attn(memory_bank, memory_bank, query_norm,
                                       mask=src_pad_mask,
                                       layer_cache=layer_cache,
                                       type="context")
         output = self.feed_forward(self.drop(mid) + query)
 
-        return output, attn
+        return output, layer_context_attention, layer_self_attention
 
     def update_dropout(self, dropout):
         self.self_attn.update_dropout(dropout)
@@ -146,6 +146,7 @@ class TransformerDecoder(DecoderBase):
         # just reuses the context attention.
         self._copy = copy_attn
         self.layer_norm = nn.LayerNorm(d_model, eps=1e-6)
+        self.num_layers = num_layers
 
     @classmethod
     def from_opt(cls, opt, embeddings):
@@ -203,32 +204,40 @@ class TransformerDecoder(DecoderBase):
         src_pad_mask = src_words.data.eq(pad_idx).unsqueeze(1)  # [B, 1, T_src]
         tgt_pad_mask = tgt_words.data.eq(pad_idx).unsqueeze(1)  # [B, 1, T_tgt]
 
+        #+HANDE
+        context_attentions = torch.Tensor(src_batch, src_len, tgt_len, self.num_layers)
+
+        #FIXME
+        dec_self_attentions = None
+        #dec_self_attentions = torch.Tensor(src_batch, tgt_len, tgt_len, self.num_layers)
+
         for i, layer in enumerate(self.transformer_layers):
             layer_cache = self.state["cache"]["layer_{}".format(i)] \
                 if step is not None else None
-            output, attn = layer(
-                output,
-                src_memory_bank,
-                src_pad_mask,
-                tgt_pad_mask,
-                layer_cache=layer_cache,
-                step=step)
+
+            output, layer_context_attention, layer_self_attention = layer(
+                                                                        output,
+                                                                        src_memory_bank,
+                                                                        src_pad_mask,
+                                                                        tgt_pad_mask,
+                                                                        layer_cache=layer_cache,
+                                                                        step=step)
+            context_attentions[:, :, :, i] = layer_context_attention.permute(0, 2, 1).contiguous()
+            #dec_self_attentions[:, :, :, i] = layer_self_attention
 
         output = self.layer_norm(output)
         dec_outs = output.transpose(0, 1).contiguous()
-        attn = attn.transpose(0, 1).contiguous()
+        #attn = attn.transpose(0, 1).contiguous()
 
-        attns = {"std": attn}
+        #TODO: FIXME: Maybe we can remove this? translator.py should change similarly.
+        context_attention_dict = {"std": context_attentions}
         if self._copy:
-            attns["copy"] = attn
-
-        #+HANDE
-        dec_self_attentions = [dec_layer.self_attn for dec_layer in self.transformer_layers]
+            context_attention_dict["copy"] = context_attentions
 
         # TODO change the way attns is returned dict => list or tuple (onnx)
-        return dec_outs, attns, dec_self_attentions
-
+        return dec_outs, context_attention_dict, dec_self_attentions
         #-HANDE
+
 
     def _init_cache(self, memory_bank):
         self.state["cache"] = {}
