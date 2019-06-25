@@ -549,7 +549,7 @@ class Translator(object):
 
         #+HANDE
         # Original:
-        enc_states, memory_bank, src_lengths = self.model.encoder(src, src_lengths)
+        enc_states, memory_bank, src_lengths, encodings_all_layers = self.model.encoder(src, src_lengths)
         #-HANDE
 
         if src_lengths is None:
@@ -559,7 +559,9 @@ class Translator(object):
                                .type_as(memory_bank) \
                                .long() \
                                .fill_(memory_bank.size(0))
-        return src, enc_states, memory_bank, src_lengths
+        #+HANDE
+        return src, enc_states, memory_bank, src_lengths, encodings_all_layers
+        #-HANDE
 
     def _decode_and_generate(
             self,
@@ -639,7 +641,7 @@ class Translator(object):
         # (1) Run the encoder on the src.
         #+HANDE
         # Original:
-        src, enc_states, memory_bank, src_lengths = self._run_encoder(batch)
+        src, enc_states, memory_bank, src_lengths, encodings_all_layers = self._run_encoder(batch)
         #-HANDE
 
         self.model.decoder.init_state(src, memory_bank, enc_states)
@@ -657,7 +659,8 @@ class Translator(object):
             #FIXME: Check that _gold_score() doesn't mess with these values!!
             #FIXME: Check that enc_states are really embeddings and memory_bank is really encodings
             "embeddings": enc_states,
-            "enc_representations": memory_bank
+            "enc_representations": memory_bank,
+            "encodings_all_layers": encodings_all_layers
             #-HANDE
         }
 
@@ -761,7 +764,7 @@ class Translator(object):
             for __ in range(batch_size)]
 
         # (1) Run the encoder on the src.
-        src, enc_states, memory_bank, src_lengths = self._run_encoder(batch)
+        src, enc_states, memory_bank, src_length = self._run_encoder(batch)
         self.model.decoder.init_state(src, memory_bank, enc_states)
 
         results = {

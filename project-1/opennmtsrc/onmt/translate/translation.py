@@ -66,6 +66,7 @@ class TranslationBuilder(object):
         #+HANDE
         embeddings = translation_batch["embeddings"]
         enc_representations = translation_batch["enc_representations"]
+        encodings_all_layers = translation_batch["encodings_all_layers"]
         #-HANDE
 
         preds, pred_score, attn, gold_score, indices = list(zip(
@@ -118,6 +119,7 @@ class TranslationBuilder(object):
                 src_raw,
                 enc_representations[0:len(src_raw), b, :],
                 embeddings[0:len(src_raw), b, :],
+                encodings_all_layers[0:len(src_raw), b, :, :],
                 pred_sents,
                 attn[b],
                 pred_score[b],
@@ -199,25 +201,34 @@ class Representation(object):
         gold_score (List[float]): Log-prob of gold translation.
     """
 
-    __slots__ = ["src", "src_raw", "enc_representations", "embeddings", "pred_sents", "attns", "pred_scores",
+    __slots__ = ["src", "src_raw", "enc_representations", "embeddings", "encodings_all_layers",
+                 "pred_sents", "attns", "pred_scores",
                  "gold_sent", "gold_score"]
 
-    def __init__(self, src, src_raw, enc_representations, embeddings, pred_sents,
-                 attn, pred_scores, tgt_sent, gold_score):
+    def __init__(self, src, src_raw, enc_representations, embeddings, encodings_all_layers,
+                 pred_sents, attn, pred_scores, tgt_sent, gold_score):
         self.src = src
         self.src_raw = src_raw
         self.enc_representations = enc_representations
         self.embeddings = embeddings
+        self.encodings_all_layers = encodings_all_layers
         self.pred_sents = pred_sents
         self.attns = attn
 
     def to_list(self):
         sentence = " ".join(self.src_raw)
-        encodings = self.enc_representations.cpu().numpy()
         sent_len = len(self.src_raw)
-        encodings_final = encodings[sent_len-1, :]
-        encodings_maxpool = np.amax(encodings, axis=0)
-        encodings_avg = np.average(encodings, axis=0)
+
+        #encodings = self.enc_representations.cpu().numpy()
+        #encodings_final = encodings[sent_len-1, :]
+        #encodings_maxpool = np.amax(encodings, axis=0)
+        #encodings_avg = np.average(encodings, axis=0)
+
+        encodings_all_layers = self.encodings_all_layers.cpu().numpy()
+        encodings_final = encodings_all_layers[sent_len-1, :, :]
+        encodings_maxpool = np.amax(encodings_all_layers, axis=0)
+        encodings_avg = np.average(encodings_all_layers, axis=0)
+
         return           [{'tokens': self.src_raw,
                            #'embedding': self.embeddings.cpu().numpy(),
                            'encodings_final': encodings_final,

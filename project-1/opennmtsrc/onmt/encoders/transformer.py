@@ -2,6 +2,7 @@
 Implementation of "Attention is All You Need"
 """
 
+import torch
 import torch.nn as nn
 
 from onmt.encoders.encoder import EncoderBase
@@ -98,6 +99,7 @@ class TransformerEncoder(EncoderBase):
                 max_relative_positions=max_relative_positions)
              for i in range(num_layers)])
         self.layer_norm = nn.LayerNorm(d_model, eps=1e-6)
+        self.num_layers = num_layers
 
     @classmethod
     def from_opt(cls, opt, embeddings):
@@ -123,11 +125,20 @@ class TransformerEncoder(EncoderBase):
         padding_idx = self.embeddings.word_padding_idx
         mask = words.data.eq(padding_idx).unsqueeze(1)  # [B, 1, T]
         # Run the forward pass of every layer of the tranformer.
-        for layer in self.transformer:
+
+        #+HANDE
+        encodings_all_layers = torch.Tensor(out.shape[0], out.shape[1], out.shape[2], self.num_layers)
+        #-HANDE
+
+        for i, layer in enumerate(self.transformer):
             out = layer(out, mask)
+            encodings_all_layers[:,:,:,i] = out.cpu()
+
         out = self.layer_norm(out)
 
-        return emb, out.transpose(0, 1).contiguous(), lengths
+        #+HANDE
+        return emb, out.transpose(0, 1).contiguous(), lengths, encodings_all_layers.transpose(0, 1).contiguous()
+        #-HANDE
 
     def update_dropout(self, dropout):
         self.embeddings.update_dropout(dropout)
