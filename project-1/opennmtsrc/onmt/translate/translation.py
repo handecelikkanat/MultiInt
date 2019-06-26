@@ -234,5 +234,5 @@ class Representation(object):
                            'encodings_final': encodings_final,
                            'encodings_maxpool': encodings_maxpool,
                            'encodings_avg': encodings_avg,
-                           'context_attention': self.attns
+                           'context_attention': self.attns[0].cpu().numpy()
                            }]

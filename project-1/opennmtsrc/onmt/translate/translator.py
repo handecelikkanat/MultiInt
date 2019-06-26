@@ -394,7 +394,7 @@ class Translator(object):
 
 
         #+HANDE: FIXME
-        pickle.dump(representations_shard, open(self.representations_file + '.' + str(shard_id), 'wb'))
+        #pickle.dump(representations_shard, open(self.representations_file + '.' + str(shard_id), 'wb'))
         #-HANDE
 
         end_time = time.time()

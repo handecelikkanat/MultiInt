@@ -23,12 +23,11 @@ def main(opt):
         if opt.tgt is not None else repeat(None)
     shard_pairs = zip(src_shards, tgt_shards)
 
-    # +HANDE: FIXME
-    #representations_all = []
+    #+HANDE: FIXME
+    representations_all = []
     for i, (src_shard, tgt_shard) in enumerate(shard_pairs):
         logger.info("Translating shard %d." % i)
-        #representations_shard, _, _ = translator.translate(
-        translator.translate(
+        representations_shard, _, _ = translator.translate(
                                                     src=src_shard,
                                                     tgt=tgt_shard,
                                                     src_dir=opt.src_dir,
@@ -36,10 +35,10 @@ def main(opt):
                                                     attn_debug=opt.attn_debug,
                                                     shard_id=i
                                                     )
-        #representations_all.extend(representations_shard)
+        representations_all.extend(representations_shard)
 
-    #pickle.dump(representations_all, open(opt.representations_file, 'wb'))
-    # -HANDE
+    pickle.dump(representations_all, open(opt.representations_file, 'wb'))
+    #-HANDE
 
 
 def _get_parser():
