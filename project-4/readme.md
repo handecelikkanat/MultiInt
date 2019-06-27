@@ -39,7 +39,11 @@ learning which AH turn off:
 | 6-layer TR 8AH tot 512 (DET)    |   102316728   (it opens only first and last layer)      |    50k 23.84  100k 25.20  150k 25.53   200k  26.24       |
 | 2-layer TR 8AH tot 512 (default)    |   66538114         |   50k 22.75 100k 23.92 150k 24.52  200k  24.68         |
 | 3-layer TR 8AH tot 512 (default)    |   73894530         |    50k 23.36 100k 24.93 150k 25.06  200k 25.46         |
-| 2-layer enc 6-layer dec TR 8AH tot 512 (default)    |   83354242         |  50k 23.67 100k 24.52 150k 25.52 200k  25.93     |
+| 2-layer enc 6-layer dec TR 8AH tot 512 (default)    |   83354242         |  50k 23.67 100k 24.52 150k 25.52 200k  25.93 |
+| 6-layer enc TR 8AH 6-layer dec TR 8AH tot 512 (default)  europarl   |   84150790        | training |
+| 2-layer enc TR 8AH 1-layer dec LSTM tot 512  europarl  |    49203718        | training |
+| 6-layer enc TR 8AH 1-layer dec LSTM tot 512  europarl  |    61813254        | training |
+| 6-layer enc TR 8AH (DET off) 1-layer dec LSTM tot 512  europarl  |   68166204         | training |
 
 
 
