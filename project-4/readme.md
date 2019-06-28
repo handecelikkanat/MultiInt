@@ -44,10 +44,10 @@ learning which AH turn off:
 
 | Model  Europarl               | number of parameters     | BLEU newstest2014 |
 | ---                    | ---                      |---                |
-| 6-layer enc TR 8AH 6-layer dec TR 8AH tot 512 (default)    |   84150790        | training |
-| 2-layer enc TR 8AH 1-layer dec LSTM tot 512   |    49203718        | training |
-| 6-layer enc TR 8AH 1-layer dec LSTM tot 512   |    61813254        | training |
-| 6-layer enc TR 8AH (DET off) 1-layer dec LSTM tot 512   |   68166204         | training |
+| 6-layer enc 6-layer dec TR 8AH tot 512 (default)    |   84150790        | 50k  18.11 100k 19.04  |
+| 2-layer enc 1-layer dec TR 8AH tot 512   |    50521094        | 50k 15.33 100k 15.86 |
+| 6-layer enc 1-layer dec TR 8AH tot 512   |    63130630        | 50k 16.84 |
+| 6-layer enc (DET off) 1-layer dec TR 8AH tot 512   |   69483580    | 50k 15.86 |
 
 
 
