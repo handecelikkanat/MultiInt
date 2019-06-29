@@ -48,7 +48,7 @@ learning which AH turn off:
 | 2-layer enc 1-layer dec TR 8AH tot 512   |    50521094        | 50k 15.33 100k 15.86 |
 | 6-layer enc 1-layer dec TR 8AH tot 512   |    63130630        | 50k 16.84 100k |
 | 6-layer enc (DET off1) 1-layer dec TR 8AH tot 512   |   69483580    | 50k 15.86 100k |
-| 6-layer enc (DET off2) 1-layer dec TR 8AH tot 512   |   63185980    | 50k 100k |
+| 6-layer enc (DET off2) 1-layer dec TR 8AH tot 512   |   63185980    | 50k 15.94 100k |
 
 
 
