@@ -60,7 +60,11 @@ output: 8 values, 0 or 1 representing off and on for each AH
 
 DET off1: inner-attention like model. rep = linear(relu(linear(dim input, dim)), 8) , linear( softmax(rep) * input , 1) 
 
+layer 0,1,2 all on, layer 3 all closed, layer 4 5AH open, layer 5 2AH on. 
+
 DET off2: rep = selu(linear(dim input, 8)) , tanh(linear( rep * input , 1))
+
+layer 0 all on, layer 1 all off, layer 2 all on, layer 3 all off, layer 4 all on, layer 5 all off
 
 DET off3: rep = sparsemax(linear(dim input, 8)), tanh(linear( rep * input, 1))
 
