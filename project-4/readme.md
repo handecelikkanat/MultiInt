@@ -68,7 +68,14 @@ layer 0 all on, layer 1 all off, layer 2 all on, layer 3 all off, layer 4 all on
 
 DET off3: rep = sparsemax(linear(dim input, 8)), tanh(linear( rep * input, 1))
 
+layer 0,1,3,4,5 all on, layer 2 all off
+
 DET off4: rep = softmax(linear(dim input, 8)), sigmoid(linear( rep * input, 1))
+
+200k:
+layer 0,1,2,4,5 all off. layer 3 half on 
+100k:
+layer 1 1AH on and layer 5 2AH on, all others off
 
 DET off5: rep = softmax(linear(dim input, 8)), tanh(linear( rep * input, 1))
 
