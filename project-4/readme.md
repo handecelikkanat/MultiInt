@@ -57,7 +57,13 @@ input: current representation and previous output
 
 output: 8 values, 0 or 1 representing off and on for each AH 
 
-DET off1:
+DET off1: inner-attention like model. rep = linear(relu(linear(dim input, dim)), 8) , linear( softmax(rep) * input , 1) 
+
+DET off2: rep = selu(linear(dim input, 8)) , tanh(linear( rep * input , 1))
+
+DET off3: rep = sparsemax(linear(dim input, 8)), tanh(linear( rep * input, 1))
+
+DET off4: rep = softmax(linear(dim input, 8)), sigmoid(linear( rep * input, 1))
 
 
 
