@@ -47,6 +47,7 @@ learning which AH turn off:
 | 6-layer enc 6-layer dec TR 8AH tot 512 (default)    |   84150790        | 50k  17.95 100k 19.08 150k 19.53 200k 19.38 |
 | 6-layer enc (DET off2) 6-layer dec TR 8AH tot 512   |   84206140    | 50k 17.69 100k 18.23 150k 18.21 200k 18.29 |
 | 6-layer enc 1-layer dec TR 8AH tot 512   |    63130630        | 50k 16.84 100k 17.39 150k 17.98 200k 17.93 |
+| 6-layer enc (DET off5) 1-layer dec TR 8AH tot 512   |   63185980    | 50k  100k  150k  200k   |
 | 6-layer enc (DET off4) 1-layer dec TR 8AH tot 512   |   63185980    | 50k 12.71  100k 13.21 150k 10.85 200k 11.79  |
 | 6-layer enc (DET off3) 1-layer dec TR 8AH tot 512   |   63185980    | 50k 16.46  100k 17.06 150k 17.32 200k 17.27  |
 | 6-layer enc (DET off2) 1-layer dec TR 8AH tot 512   |   63185980    | 50k 15.94 100k 16.87 150k 17.12 200k 16.98 |
@@ -64,6 +65,8 @@ DET off2: rep = selu(linear(dim input, 8)) , tanh(linear( rep * input , 1))
 DET off3: rep = sparsemax(linear(dim input, 8)), tanh(linear( rep * input, 1))
 
 DET off4: rep = softmax(linear(dim input, 8)), sigmoid(linear( rep * input, 1))
+
+DET off5: rep = softmax(linear(dim input, 8)), tanh(linear( rep * input, 1))
 
 
 
