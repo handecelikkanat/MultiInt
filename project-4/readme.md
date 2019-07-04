@@ -44,7 +44,7 @@ learning which AH turn off:
 
 | Model  Europarl               | number of parameters     | BLEU newstest2014 |
 | ---                    | ---                      |---                |
-| 6-layer enc 6-layer dec TR 8AH tot 512 (default)    |   84150790        | 50k  18.11 100k 19.04 150k 200k |
+| 6-layer enc 6-layer dec TR 8AH tot 512 (default)    |   84150790        | 50k  17.95 100k 19.08 150k 19.53 200k 19.38 |
 | 6-layer enc (DET off2) 6-layer dec TR 8AH tot 512   |   84206140    | 50k 17.69 100k 18.23 150k 18.21 200k 18.29 |
 | 6-layer enc 1-layer dec TR 8AH tot 512   |    63130630        | 50k 16.84 100k 17.39 150k 17.98 200k 17.93 |
 | 6-layer enc (DET off4) 1-layer dec TR 8AH tot 512   |   63185980    | 50k 12.71  100k 13.21 150k 10.85 200k 11.79  |
@@ -53,7 +53,11 @@ learning which AH turn off:
 | 6-layer enc (DET off1) 1-layer dec TR 8AH tot 512   |   69483580    | 50k 15.86 100k 16.78 150k 16.82 200k 16.56 |
 | 2-layer enc 1-layer dec TR 8AH tot 512   |    50521094        | 50k 15.33 100k 15.86 150k 15.82 200k 16.04 |
 
+input: current representation and previous output
 
+output: 8 values, 0 or 1 representing off and on for each AH 
+
+DET off1:
 
 
 
