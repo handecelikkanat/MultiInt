@@ -219,18 +219,18 @@ class Representation(object):
         sentence = " ".join(self.src_raw)
         sent_len = len(self.src_raw)
 
-        #encodings = self.enc_representations.cpu().numpy()
-        #encodings_final = encodings[sent_len-1, :]
-        #encodings_maxpool = np.amax(encodings, axis=0)
-        #encodings_avg = np.average(encodings, axis=0)
+        encodings = self.enc_representations.cpu().numpy()
+        encodings_final = encodings[sent_len-1, :]
+        encodings_maxpool = np.amax(encodings, axis=0)
+        encodings_avg = np.average(encodings, axis=0)
 
-        encodings_all_layers = self.encodings_all_layers.cpu().numpy()
-        encodings_final = encodings_all_layers[sent_len-1, :, :]
-        encodings_maxpool = np.amax(encodings_all_layers, axis=0)
-        encodings_avg = np.average(encodings_all_layers, axis=0)
+        #encodings_all_layers = self.encodings_all_layers.cpu().numpy()
+        #encodings_final = encodings_all_layers[sent_len-1, :, :]
+        #encodings_maxpool = np.amax(encodings_all_layers, axis=0)
+        #encodings_avg = np.average(encodings_all_layers, axis=0)
 
         return           [{'tokens': self.src_raw,
-                           #'embedding': self.embeddings.cpu().numpy(),
+                           'embedding': self.embeddings.cpu().numpy(),
                            'encodings_final': encodings_final,
                            'encodings_maxpool': encodings_maxpool,
                            'encodings_avg': encodings_avg,
