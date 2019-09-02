@@ -48,7 +48,7 @@ class ArgumentParser(cfargparse.ArgumentParser):
 
     @classmethod
     def validate_model_opts(cls, model_opt):
-        assert model_opt.model_type in ["text", "img", "audio"], \
+        assert model_opt.model_type in ["text", "img", "audio", "vec"], \
             "Unsupported model type %s" % model_opt.model_type
 
         # this check is here because audio allows the encoder and decoder to
@@ -63,10 +63,6 @@ class ArgumentParser(cfargparse.ArgumentParser):
             if model_opt.model_type != "text":
                 raise AssertionError(
                     "--share_embeddings requires --model_type text.")
-        if model_opt.model_dtype == "fp16":
-            logger.warning(
-                "FP16 is experimental, the generated checkpoints may "
-                "be incompatible with a future version")
 
     @classmethod
     def ckpt_model_opts(cls, ckpt_opt):
@@ -104,7 +100,10 @@ class ArgumentParser(cfargparse.ArgumentParser):
             "Please check -data_ids and -data_weights options!"
 
         assert len(opt.dropout) == len(opt.dropout_steps), \
-            "Number of dropout values must match number of accum_steps"
+            "Number of dropout values must match accum_steps values"
+
+        assert len(opt.attention_dropout) == len(opt.dropout_steps), \
+            "Number of attention_dropout values must match accum_steps values"
 
     @classmethod
     def validate_translate_opts(cls, opt):

@@ -9,13 +9,14 @@ from itertools import chain, cycle
 
 import torch
 import torchtext.data
-from torchtext.data import Field
+from torchtext.data import Field, RawField
 from torchtext.vocab import Vocab
 from torchtext.data.utils import RandomShuffler
 
 from onmt.inputters.text_dataset import text_fields, TextMultiField
 from onmt.inputters.image_dataset import image_fields
 from onmt.inputters.audio_dataset import audio_fields
+from onmt.inputters.vec_dataset import vec_fields
 from onmt.utils.logging import logger
 # backwards compatibility
 from onmt.inputters.text_dataset import _feature_tokenize  # noqa: F401
@@ -93,7 +94,7 @@ def get_fields(
         the dataset example attributes.
     """
 
-    assert src_data_type in ['text', 'img', 'audio'], \
+    assert src_data_type in ['text', 'img', 'audio', 'vec'], \
         "Data type not implemented"
     assert not dynamic_dict or src_data_type == 'text', \
         'it is not possible to use dynamic_dict with non-text input'
@@ -101,7 +102,8 @@ def get_fields(
 
     fields_getters = {"text": text_fields,
                       "img": image_fields,
-                      "audio": audio_fields}
+                      "audio": audio_fields,
+                      "vec": vec_fields}
 
     src_field_kwargs = {"n_feats": n_src_feats,
                         "include_lengths": True,
@@ -125,6 +127,9 @@ def get_fields(
             use_vocab=False, dtype=torch.float,
             postprocessing=make_src, sequential=False)
         fields["src_map"] = src_map
+
+        src_ex_vocab = RawField()
+        fields["src_ex_vocab"] = src_ex_vocab
 
         align = Field(
             use_vocab=False, dtype=torch.long,
@@ -503,11 +508,16 @@ def batch_iter(data, batch_size, batch_size_fn=None, batch_size_multiple=1):
                 yield minibatch
                 minibatch, size_so_far = [], 0
             else:
-                yield minibatch[:-overflowed]
-                minibatch = minibatch[-overflowed:]
-                size_so_far = 0
-                for i, ex in enumerate(minibatch):
-                    size_so_far = batch_size_fn(ex, i + 1, size_so_far)
+                if overflowed == len(minibatch):
+                    logger.warning(
+                        "An example was ignored, more tokens"
+                        " than allowed by tokens batch_size")
+                else:
+                    yield minibatch[:-overflowed]
+                    minibatch = minibatch[-overflowed:]
+                    size_so_far = 0
+                    for i, ex in enumerate(minibatch):
+                        size_so_far = batch_size_fn(ex, i + 1, size_so_far)
     if minibatch:
         yield minibatch
 
@@ -517,12 +527,12 @@ def _pool(data, batch_size, batch_size_fn, batch_size_multiple,
     for p in torchtext.data.batch(
             data, batch_size * pool_factor,
             batch_size_fn=batch_size_fn):
-        p_batch = batch_iter(
+        p_batch = list(batch_iter(
             sorted(p, key=sort_key),
             batch_size,
             batch_size_fn=batch_size_fn,
-            batch_size_multiple=batch_size_multiple)
-        for b in random_shuffler(list(p_batch)):
+            batch_size_multiple=batch_size_multiple))
+        for b in random_shuffler(p_batch):
             yield b
 
 
@@ -606,18 +616,22 @@ class MultipleDatasetIterator(object):
     respective weights, and yields a batch in the wanted proportions.
     """
     def __init__(self,
-                 iterables,
+                 train_shards,
+                 fields,
                  device,
                  opt):
         self.index = -1
-        self.iterators = [iter(iterable) for iterable in iterables]
-        self.iterables = iterables
+        self.iterables = []
+        for shard in train_shards:
+            self.iterables.append(
+                build_dataset_iter(shard, fields, opt, multi=True))
+        self.init_iterators = True
         self.weights = opt.data_weights
         self.batch_size = opt.batch_size
         self.batch_size_fn = max_tok_len \
             if opt.batch_type == "tokens" else None
         self.batch_size_multiple = 8 if opt.model_dtype == "fp16" else 1
-        self.device = "cuda" if device >= 0 else "cpu"
+        self.device = device
         # Temporarily load one shard to retrieve sort_key for data_type
         temp_dataset = torch.load(self.iterables[0]._paths[0])
         self.sort_key = temp_dataset.sort_key
@@ -626,6 +640,9 @@ class MultipleDatasetIterator(object):
         del temp_dataset
 
     def _iter_datasets(self):
+        if self.init_iterators:
+            self.iterators = [iter(iterable) for iterable in self.iterables]
+            self.init_iterators = False
         for weight in self.weights:
             self.index = (self.index + 1) % len(self.iterators)
             for i in range(weight):
@@ -636,18 +653,19 @@ class MultipleDatasetIterator(object):
             yield next(iterator)
 
     def __iter__(self):
-        for minibatch in _pool(
-                self._iter_examples(),
-                self.batch_size,
-                self.batch_size_fn,
-                self.batch_size_multiple,
-                self.sort_key,
-                self.random_shuffler,
-                self.pool_factor):
-            minibatch = sorted(minibatch, key=self.sort_key, reverse=True)
-            yield torchtext.data.Batch(minibatch,
-                                       self.iterables[0].dataset,
-                                       self.device)
+        while True:
+            for minibatch in _pool(
+                    self._iter_examples(),
+                    self.batch_size,
+                    self.batch_size_fn,
+                    self.batch_size_multiple,
+                    self.sort_key,
+                    self.random_shuffler,
+                    self.pool_factor):
+                minibatch = sorted(minibatch, key=self.sort_key, reverse=True)
+                yield torchtext.data.Batch(minibatch,
+                                           self.iterables[0].dataset,
+                                           self.device)
 
 
 class DatasetLazyIter(object):
@@ -679,9 +697,9 @@ class DatasetLazyIter(object):
         self.pool_factor = pool_factor
 
     def _iter_dataset(self, path):
+        logger.info('Loading dataset from %s' % path)
         cur_dataset = torch.load(path)
-        logger.info('Loading dataset from %s, number of examples: %d' %
-                    (path, len(cur_dataset)))
+        logger.info('number of examples: %d' % len(cur_dataset))
         cur_dataset.fields = self.fields
         cur_iter = OrderedIterator(
             dataset=cur_dataset,
@@ -700,10 +718,12 @@ class DatasetLazyIter(object):
             self.dataset = cur_iter.dataset
             yield batch
 
-        cur_dataset.examples = None
-        gc.collect()
-        del cur_dataset
-        gc.collect()
+        # NOTE: This is causing some issues for consumer/producer,
+        # as we may still have some of those examples in some queue
+        # cur_dataset.examples = None
+        # gc.collect()
+        # del cur_dataset
+        # gc.collect()
 
     def __iter__(self):
         num_batches = 0
@@ -757,9 +777,12 @@ def build_dataset_iter(corpus_type, fields, opt, is_train=True, multi=False):
     but more sophisticated strategy like curriculum learning is ok too.
     """
     dataset_paths = list(sorted(
-        glob.glob(opt.data + '.' + corpus_type + '*.pt')))
+        glob.glob(opt.data + '.' + corpus_type + '.[0-9]*.pt')))
     if not dataset_paths:
-        return None
+        if is_train:
+            raise ValueError('Training data %s not found' % opt.data)
+        else:
+            return None
     if multi:
         batch_size = 1
         batch_fn = None
@@ -784,3 +807,8 @@ def build_dataset_iter(corpus_type, fields, opt, is_train=True, multi=False):
         repeat=not opt.single_pass,
         num_batches_multiple=max(opt.accum_count) * opt.world_size,
         yield_raw_example=multi)
+
+
+def build_dataset_iter_multiple(train_shards, fields, opt):
+    return MultipleDatasetIterator(
+        train_shards, fields, "cuda" if opt.gpu_ranks else "cpu", opt)

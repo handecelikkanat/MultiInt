@@ -2,7 +2,6 @@
 from __future__ import unicode_literals, print_function
 
 import torch
-import numpy as np
 from onmt.inputters.text_dataset import TextMultiField
 
 
@@ -48,7 +47,7 @@ class TranslationBuilder(object):
         if self.replace_unk and attn is not None and src is not None:
             for i in range(len(tokens)):
                 if tokens[i] == tgt_field.unk_token:
-                    _, max_index = attn[i].max(0)
+                    _, max_index = attn[i][:len(src_raw)].max(0)
                     tokens[i] = src_raw[max_index.item()]
                     if self.phrase_table != "":
                         with open(self.phrase_table, "r") as f:
@@ -62,12 +61,6 @@ class TranslationBuilder(object):
         assert(len(translation_batch["gold_score"]) ==
                len(translation_batch["predictions"]))
         batch_size = batch.batch_size
-
-        #+HANDE
-        embeddings = translation_batch["embeddings"]
-        enc_representations = translation_batch["enc_representations"]
-        encodings_all_layers = translation_batch["encodings_all_layers"]
-        #-HANDE
 
         preds, pred_score, attn, gold_score, indices = list(zip(
             *sorted(zip(translation_batch["predictions"],
@@ -87,7 +80,6 @@ class TranslationBuilder(object):
             if self.has_tgt else None
 
         translations = []
-        representations = []
         for b in range(batch_size):
             if self._has_text_src:
                 src_vocab = self.data.src_vocabs[inds[b]] \
@@ -113,24 +105,9 @@ class TranslationBuilder(object):
                 src_raw, pred_sents, attn[b], pred_score[b],
                 gold_sent, gold_score[b]
             )
-
-            representation = Representation(
-                src[:, b] if src is not None else None,
-                src_raw,
-                enc_representations[0:len(src_raw), b, :],
-                embeddings[0:len(src_raw), b, :],
-                encodings_all_layers[0:len(src_raw), b, :, :],
-                pred_sents,
-                attn[b],
-                pred_score[b],
-                gold_sent,
-                gold_score[b]
-            ).to_list()
-
             translations.append(translation)
-            representations.extend(representation)
 
-        return translations, representations
+        return translations
 
 
 class Translation(object):
@@ -183,56 +160,3 @@ class Translation(object):
                 msg.append("[{:.4f}] {}\n".format(score, sent))
 
         return "".join(msg)
-
-
-class Representation(object):
-    """Container for a representation.
-
-    Attributes:
-        src (LongTensor): Source word IDs.
-        src_raw (List[str]): Raw source words.
-        enc_representations: Encodings of each word (=Output of the translation model, called memory_bank in ONMT)
-        embeddings: Embedding vector corresponding to src_raw
-        pred_sents (List[List[str]]): Words from the n-best translations.
-        pred_scores (List[List[float]]): Log-probs of n-best translations.
-        attns (List[FloatTensor]) : Attention distribution for each
-            translation.
-        gold_sent (List[str]): Words from gold translation.
-        gold_score (List[float]): Log-prob of gold translation.
-    """
-
-    __slots__ = ["src", "src_raw", "enc_representations", "embeddings", "encodings_all_layers",
-                 "pred_sents", "attns", "pred_scores",
-                 "gold_sent", "gold_score"]
-
-    def __init__(self, src, src_raw, enc_representations, embeddings, encodings_all_layers,
-                 pred_sents, attn, pred_scores, tgt_sent, gold_score):
-        self.src = src
-        self.src_raw = src_raw
-        self.enc_representations = enc_representations
-        self.embeddings = embeddings
-        self.encodings_all_layers = encodings_all_layers
-        self.pred_sents = pred_sents
-        self.attns = attn
-
-    def to_list(self):
-        sentence = " ".join(self.src_raw)
-        sent_len = len(self.src_raw)
-
-        encodings = self.enc_representations.cpu().numpy()
-        encodings_final = encodings[sent_len-1, :]
-        encodings_maxpool = np.amax(encodings, axis=0)
-        encodings_avg = np.average(encodings, axis=0)
-
-        #encodings_all_layers = self.encodings_all_layers.cpu().numpy()
-        #encodings_final = encodings_all_layers[sent_len-1, :, :]
-        #encodings_maxpool = np.amax(encodings_all_layers, axis=0)
-        #encodings_avg = np.average(encodings_all_layers, axis=0)
-
-        return           [{'tokens': self.src_raw,
-                           'embedding': self.embeddings.cpu().numpy(),
-                           'encodings_final': encodings_final,
-                           'encodings_maxpool': encodings_maxpool,
-                           'encodings_avg': encodings_avg,
-                           'context_attention': self.attns[0].cpu().numpy()
-                           }]

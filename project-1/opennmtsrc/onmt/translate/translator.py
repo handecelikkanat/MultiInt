@@ -6,7 +6,6 @@ import os
 import math
 import time
 from itertools import count
-import pickle
 
 import torch
 
@@ -18,7 +17,7 @@ from onmt.translate.beam_search import BeamSearch
 from onmt.translate.random_sampling import RandomSampling
 from onmt.utils.misc import tile, set_random_seed
 from onmt.modules.copy_generator import collapse_copy_scores
-
+from onmt.translate.pool import maxpool, meanpool, lastpool
 
 def build_translator(opt, report_score=True, logger=None, out_file=None):
     if out_file is None:
@@ -27,7 +26,6 @@ def build_translator(opt, report_score=True, logger=None, out_file=None):
     load_test_model = onmt.decoders.ensemble.load_test_model \
         if len(opt.models) > 1 else onmt.model_builder.load_test_model
     fields, model, model_opt = load_test_model(opt)
-
     scorer = onmt.translate.GNMTGlobalScorer.from_opt(opt)
 
     translator = Translator.from_opt(
@@ -37,7 +35,6 @@ def build_translator(opt, report_score=True, logger=None, out_file=None):
         model_opt,
         global_scorer=scorer,
         out_file=out_file,
-        representations_file=opt.representations_file,
         report_score=report_score,
         logger=logger
     )
@@ -113,7 +110,6 @@ class Translator(object):
             copy_attn=False,
             global_scorer=None,
             out_file=None,
-            representations_file=None,
             report_score=True,
             logger=None,
             seed=-1):
@@ -168,7 +164,6 @@ class Translator(object):
             raise ValueError(
                 "Coverage penalty requires an attentional decoder.")
         self.out_file = out_file
-        self.representations_file = representations_file
         self.report_score = report_score
         self.logger = logger
 
@@ -196,7 +191,6 @@ class Translator(object):
             model_opt,
             global_scorer=None,
             out_file=None,
-            representations_file=None,
             report_score=True,
             logger=None):
         """Alternate constructor.
@@ -245,7 +239,6 @@ class Translator(object):
             copy_attn=model_opt.copy_attn,
             global_scorer=global_scorer,
             out_file=out_file,
-            representations_file=representations_file,
             report_score=report_score,
             logger=logger,
             seed=opt.seed)
@@ -274,8 +267,7 @@ class Translator(object):
             src_dir=None,
             batch_size=None,
             attn_debug=False,
-            phrase_table="",
-            shard_id=None):
+            phrase_table=""):
         """Translate content of ``src`` and get gold scores from ``tgt``.
 
         Args:
@@ -332,19 +324,11 @@ class Translator(object):
 
         start_time = time.time()
 
-        #+HANDE: FIXME
-        representations_shard = []
-        #-HANDE
-
         for batch in data_iter:
             batch_data = self.translate_batch(
                 batch, data.src_vocabs, attn_debug
             )
-
-            #+HANDE: FIXME
-            translations, representations_batch = xlation_builder.from_batch(batch_data)
-            representations_shard.extend(representations_batch)
-            #-HANDE
+            translations = xlation_builder.from_batch(batch_data)
 
             for trans in translations:
                 all_scores += [trans.pred_scores[:self.n_best]]
@@ -392,11 +376,6 @@ class Translator(object):
                     else:
                         os.write(1, output.encode('utf-8'))
 
-
-        #+HANDE: FIXME
-        #pickle.dump(representations_shard, open(self.representations_file + '.' + str(shard_id), 'wb'))
-        #-HANDE
-
         end_time = time.time()
 
         if self.report_score:
@@ -426,8 +405,71 @@ class Translator(object):
             import json
             json.dump(self.translator.beam_accum,
                       codecs.open(self.dump_beam, 'w', 'utf-8'))
+        return all_scores, all_predictions
 
-        return representations_shard, all_scores, all_predictions
+    def get_representations(
+            self,
+            src,
+            tgt=None,
+            src_dir=None,
+            batch_size=None,
+            attn_debug=False,
+            phrase_table=""):
+        """Return sentence representations for sentences in src
+
+        Args:
+            src: See :func:`self.src_reader.read()`.
+            tgt: See :func:`self.tgt_reader.read()`.
+            src_dir: See :func:`self.src_reader.read()` (only relevant
+                for certain types of data).
+            batch_size (int): size of examples per mini-batch
+            attn_debug (bool): enables the attention logging
+
+        Returns:
+            (`list`, `list`)
+
+            * all_scores is a list of `batch_size` lists of `n_best` scores
+            * all_predictions is a list of `batch_size` lists
+                of `n_best` predictions
+        """
+
+        if batch_size is None:
+            raise ValueError("batch_size must be set")
+
+        data = inputters.Dataset(
+            self.fields,
+            readers=([self.src_reader, self.tgt_reader]
+                     if tgt else [self.src_reader]),
+            data=[("src", src), ("tgt", tgt)] if tgt else [("src", src)],
+            dirs=[src_dir, None] if tgt else [src_dir],
+            sort_key=inputters.str2sortkey[self.data_type],
+            filter_pred=self._filter_pred
+        )
+
+        data_iter = inputters.OrderedIterator(
+            dataset=data,
+            device=self._dev,
+            batch_size=batch_size,
+            train=False,
+            sort=False,
+            sort_within_batch=True,
+            shuffle=False
+        )
+
+        xlation_builder = onmt.translate.TranslationBuilder(
+            data, self.fields, self.n_best, self.replace_unk, tgt,
+            self.phrase_table
+        )
+
+        batch_representations = {}
+        for i,batch in enumerate(data_iter):
+#            self.logger.info("Extracting representations for shard %d." % i)
+            self._log("Extracting representations for batch %d of %d." % (i,len(data_iter)))
+            batch_representations.update(self.get_batch_representations(batch, data.src_vocabs, attn_debug))
+#            batch_data = self.translate_batch(
+#                batch, data.src_vocabs, attn_debug
+#            )
+        return batch_representations
 
     def _translate_random_sampling(
             self,
@@ -543,15 +585,46 @@ class Translator(object):
                     n_best=self.n_best,
                     return_attention=attn_debug or self.replace_unk)
 
+    def get_batch_representations(self, batch, src_vocabs, attn_debug):
+        """Translate a batch of sentences."""
+        with torch.no_grad():
+            if self.beam_size == 1:
+                assert(0)
+#                return self._translate_random_sampling(
+#                    batch,
+#                    src_vocabs,
+#                    self.max_length,
+#                    min_length=self.min_length,
+#                    sampling_temp=self.random_sampling_temp,
+#                    keep_topk=self.sample_from_topk,
+#                    return_attention=attn_debug or self.replace_unk)
+            else:
+                return self._get_batch_representations(
+                    batch,
+                    src_vocabs,
+                    self.max_length,
+                    min_length=self.min_length,
+                    ratio=self.ratio,
+                    n_best=self.n_best,
+                    return_attention=attn_debug or self.replace_unk)
+                ########################################################
+                # return self._translate_batch(                        #
+                #     batch,                                           #
+                #     src_vocabs,                                      #
+                #     self.max_length,                                 #
+                #     min_length=self.min_length,                      #
+                #     ratio=self.ratio,                                #
+                #     n_best=self.n_best,                              #
+                #     return_attention=attn_debug or self.replace_unk) #
+                ########################################################
+
+            
     def _run_encoder(self, batch):
         src, src_lengths = batch.src if isinstance(batch.src, tuple) \
                            else (batch.src, None)
 
-        #+HANDE
-        # Original:
-        enc_states, memory_bank, src_lengths, encodings_all_layers = self.model.encoder(src, src_lengths)
-        #-HANDE
-
+        enc_states, memory_bank, src_lengths = self.model.encoder(
+            src, src_lengths)
         if src_lengths is None:
             assert not isinstance(memory_bank, tuple), \
                 'Ensemble decoding only supported for text data'
@@ -559,9 +632,7 @@ class Translator(object):
                                .type_as(memory_bank) \
                                .long() \
                                .fill_(memory_bank.size(0))
-        #+HANDE
-        return src, enc_states, memory_bank, src_lengths, encodings_all_layers
-        #-HANDE
+        return src, enc_states, memory_bank, src_lengths
 
     def _decode_and_generate(
             self,
@@ -637,15 +708,9 @@ class Translator(object):
         beam_size = self.beam_size
         batch_size = batch.batch_size
 
-
         # (1) Run the encoder on the src.
-        #+HANDE
-        # Original:
-        src, enc_states, memory_bank, src_lengths, encodings_all_layers = self._run_encoder(batch)
-        #-HANDE
-
+        src, enc_states, memory_bank, src_lengths = self._run_encoder(batch)
         self.model.decoder.init_state(src, memory_bank, enc_states)
-
         results = {
             "predictions": None,
             "scores": None,
@@ -653,16 +718,7 @@ class Translator(object):
             "batch": batch,
             "gold_score": self._gold_score(
                 batch, memory_bank, src_lengths, src_vocabs, use_src_map,
-                enc_states, batch_size, src),
-
-            #+HANDE
-            #FIXME: Check that _gold_score() doesn't mess with these values!!
-            #FIXME: Check that enc_states are really embeddings and memory_bank is really encodings
-            "embeddings": enc_states,
-            "enc_representations": memory_bank,
-            "encodings_all_layers": encodings_all_layers
-            #-HANDE
-        }
+                enc_states, batch_size, src)}
 
         # (2) Repeat src objects `beam_size` times.
         # We use batch_size x beam_size
@@ -741,6 +797,36 @@ class Translator(object):
         results["attention"] = beam.attention
         return results
 
+    def _get_batch_representations(
+            self,
+            batch,
+            src_vocabs,
+            max_length,
+            min_length=0,
+            ratio=0.,
+            n_best=1,
+            return_attention=False):
+        # TODO: support these blacklisted features.
+        assert not self.dump_beam
+
+        # (0) Prep the components of the search.
+        use_src_map = self.copy_attn
+        beam_size = self.beam_size
+        batch_size = batch.batch_size
+
+        # (1) Run the encoder on the src.
+        src, enc_states, memory_bank, src_lengths = self._run_encoder(batch)
+        self.model.decoder.init_state(src, memory_bank, enc_states)
+        batch_examples = [tuple(ex.src[0]) for ex in batch.dataset.examples]
+        indices = batch.indices.cpu().numpy()
+        representations = {}
+        for i, src_len in zip(range(memory_bank.shape[1]),src_lengths):
+            repr = memory_bank[:,i,:].cpu().numpy()
+#            representations[batch_examples[indices[i]]] = lastpool(repr[0:src_len,:])
+            representations[batch_examples[indices[i]]] = meanpool(repr[0:src_len,:])
+
+        return representations
+        
     # This is left in the code for now, but unsued
     def _translate_batch_deprecated(self, batch, src_vocabs):
         # (0) Prep each of the components of the search.
@@ -764,7 +850,7 @@ class Translator(object):
             for __ in range(batch_size)]
 
         # (1) Run the encoder on the src.
-        src, enc_states, memory_bank, src_length = self._run_encoder(batch)
+        src, enc_states, memory_bank, src_lengths = self._run_encoder(batch)
         self.model.decoder.init_state(src, memory_bank, enc_states)
 
         results = {
