@@ -23,13 +23,14 @@ visualization tool: https://github.com/jessevig/bertviz
 ## Probing
 
 | Model                  |  BLEU newstest2014 | POS  | SEM tag | NER | CHUNK |
+| ---                    |   ---              | ---  | ---  | ---   | ---  |
 | ---                    |   ---              |  acc.  | acc.  | acc.    | acc.  |
 | 1-layer TR 8AH tot 512 dim  |  21.96  |  0.914691  |  0.895293  |  0.919706  | 0.890854  |
 | 1-layer TR 1AH 64 we 512   |  16.74  | 0.8828147  |  0.881036  |  0.896263   |  0.854128  |
-| 1-layer TR 2AH 64 we 512 |  18.30  |  0.8878352 |    |     |    |
-| 1-layer TR 3AH 64 we 512 | 19.77  |  0.9022592 |    |     |    |
-| 1-layer TR 4AH 64 we 512 | 20.12 |  0.9038531 |    |     |    |
-| 1-layer TR 5AH 64 we 512 | 20.46  |  0.9050883 |    |     |    |
+| 1-layer TR 2AH 64 we 512 |  18.30  |  0.8878352 |  ---  |  ---   | ---   |
+| 1-layer TR 3AH 64 we 512 | 19.77  |  0.9022592 |  ---  |  ---   |  ---  |
+| 1-layer TR 4AH 64 we 512 | 20.12 |  0.9038531 |  ---  |   ---  |  ---  |
+| 1-layer TR 5AH 64 we 512 | 20.46  |  0.9050883 | ---   |  ---   |  ---  |
 
 
 
