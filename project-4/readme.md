@@ -1,8 +1,5 @@
 (Ale’s current project, also Edinburgh people) Analyzing Transformer Heads. Pruning (Edinburgh) vs. growing (Ale) transformer heads to find an optimal number of non-redundant heads. Experiments on massive data on new CSC cluster.
 
-### TODO
-* inspect 6-layer TR 1AH 64 we 512 
-
 ### Benchmark data
 * Train: *europarl, news-commentary, commoncrawl, rapid, paracrawl*  (allfiltered, shuffled, bpe35k from our wmt submission) 11555682 sentences (probably i will scale down to 2.5 M and re-run the training)
 * Dev: *newstest2013*
@@ -23,66 +20,29 @@ context_original = batch, ah, seq, dim <- individual attention vector
 
 visualization tool: https://github.com/jessevig/bertviz
 
+## Probing
+
+| Model                  |  BLEU newstest2014 | POS  | SEM tag | NER | CHUNK |
+| ---                    |   ---              |  acc.  | acc.  | acc.    | acc.  |
+| 1-layer TR 8AH tot 512 dim  |  21.96  |  0.914691  |  0.895293  |  0.919706  | 0.890854  |
+| 1-layer TR 1AH 64 we 512   |  16.74  | 0.8828147  |  0.881036  |  0.896263   |  0.854128  |
+| 1-layer TR 2AH 64 we 512 |  18.30  |  0.8878352 |    |     |    |
+| 1-layer TR 3AH 64 we 512 | 19.77  |  0.9022592 |    |     |    |
+| 1-layer TR 4AH 64 we 512 | 20.12 |  0.9038531 |    |     |    |
+| 1-layer TR 5AH 64 we 512 | 20.46  |  0.9050883 |    |     |    |
+
+
+
+
+
+
+
+
 ## Scores
 
 Testing last checkpoint (200k training steps).
 
 BLEU+case.mixed+numrefs.1+smooth.exp+tok.13a+version.1.2.11
-
-
-learning which AH turn off:
-
-
-| Model                  | number of parameters     | BLEU newstest2014 |
-| ---                    | ---                      |---                |
-| 6-layer TR 8AH tot 512 (default)    |   95963778         |    50k 23.62 100k 24.83 150k 26.12 200k 25.91               |
-| 6-layer TR 8AH tot 512 (DET)    |   102316728   (it opens only first and last layer)      |    50k 23.84  100k 25.20  150k 25.53   200k  26.24       |
-| 2-layer TR 8AH tot 512 (default)    |   66538114         |   50k 22.75 100k 23.92 150k 24.52  200k  24.68         |
-| 3-layer TR 8AH tot 512 (default)    |   73894530         |    50k 23.36 100k 24.93 150k 25.06  200k 25.46         |
-| 2-layer enc 6-layer dec TR 8AH tot 512 (default)    |   83354242         |  50k 23.67 100k 24.52 150k 25.52 200k  25.93 |
-
-
-| Model  Europarl               | number of parameters     | BLEU newstest2014 |
-| ---                    | ---                      |---                |
-| 6-layer enc 6-layer dec TR 8AH tot 512 (default)    |   84150790        | 50k  17.95 100k 19.08 150k 19.53 200k 19.38 |
-| 6-layer enc (DET off2) 6-layer dec TR 8AH tot 512   |   84206140    | 50k 17.69 100k 18.23 150k 18.21 200k 18.29 |
-| 6-layer enc 1-layer dec TR 8AH tot 512   |    63130630        | 50k 16.84 100k 17.39 150k 17.98 200k 17.93 |
-| 6-layer enc (DET off5) 1-layer dec TR 8AH tot 512   |   63185980    | 50k 16.15 100k 17.13 150k 17.31 200k 17.46  |
-| 6-layer enc (DET off4) 1-layer dec TR 8AH tot 512   |   63185980    | 50k 12.71  100k 13.21 150k 10.85 200k 11.79  |
-| 6-layer enc (DET off3) 1-layer dec TR 8AH tot 512   |   63185980    | 50k 16.46  100k 17.06 150k 17.32 200k 17.27  |
-| 6-layer enc (DET off2) 1-layer dec TR 8AH tot 512   |   63185980    | 50k 15.94 100k 16.87 150k 17.12 200k 16.98 |
-| 6-layer enc (DET off1) 1-layer dec TR 8AH tot 512   |   69483580    | 50k 15.86 100k 16.78 150k 16.82 200k 16.56 |
-| 2-layer enc 1-layer dec TR 8AH tot 512   |    50521094        | 50k 15.33 100k 15.86 150k 15.82 200k 16.04 |
-
-input: current representation and previous output
-
-output: 8 values, 0 or 1 representing off and on for each AH 
-
-DET off1: inner-attention like model. rep = linear(relu(linear(dim input, dim)), 8) , linear( softmax(rep) * input , 1) 
-
-layer 0,1,2 all on, layer 3 all closed, layer 4 5AH open, layer 5 2AH on. 
-
-DET off2: rep = selu(linear(dim input, 8)) , tanh(linear( rep * input , 1))
-
-layer 0 all on, layer 1 all off, layer 2 all on, layer 3 all off, layer 4 all on, layer 5 all off
-
-DET off3: rep = sparsemax(linear(dim input, 8)), tanh(linear( rep * input, 1))
-
-layer 0,1,3,4,5 all on, layer 2 all off
-
-DET off4: rep = softmax(linear(dim input, 8)), sigmoid(linear( rep * input, 1))
-
-200k:
-layer 0,1,2,4,5 all off. layer 3 half on 
-100k:
-layer 1 1AH on and layer 5 2AH on, all others off
-
-DET off5: rep = softmax(linear(dim input, 8)), tanh(linear( rep * input, 1))
-
-
-
-
-
 
 from previous AH model (He distribution (and generator to the previous one))
 
