@@ -21,6 +21,10 @@ context_original = batch, ah, seq, dim <- individual attention vector
 visualization tool: https://github.com/jessevig/bertviz
 
 ## Probing
+[Linguistic Knowledge and Transferability of Contextual Representations. NAACL 2019](https://cs.stanford.edu/~nfliu/papers/liu+gardner+belinkov+peters+smith.naacl2019.pdf)
+
+https://github.com/nelson-liu/contextual-repr-analysis
+
 
 | Model                  |  BLEU newstest2014 | POS  | SEM tag | NER | CHUNK |
 | ---                    |   ---              | ---  | ---  | ---   | ---  |
