@@ -31,6 +31,7 @@ visualization tool: https://github.com/jessevig/bertviz
 | 1-layer TR 3AH 64 we 512 | 19.77  |  0.9022592 |  ---  |  ---   |  ---  |
 | 1-layer TR 4AH 64 we 512 | 20.12 |  0.9038531 |  ---  |   ---  |  ---  |
 | 1-layer TR 5AH 64 we 512 | 20.46  |  0.9050883 | ---   |  ---   |  ---  |
+| 1-layer TR 6AH 64 we 512 | 20.56  |  --- | ---   |  ---   |  ---  |
 
 
 
@@ -51,7 +52,6 @@ from previous AH model (He distribution (and generator to the previous one))
 | ---                    | ---                      |---                |
 | 1-layer LSTM           | 57860738                 |       21.71            |
 | 6-layer TR 8AH tot 512 (default)    |   95963778         |    50k 23.62 100k 24.83 150k 26.12 200k 25.91               |
-| 6-layer TR-BIG 16AH tot 1024 (default)    |   279972994         |   training               |
 | 6-layer TR 8AH tot 512 (splitted ah)    |   95963778         |    26.00             |
 | 6-layer TR 1AH masking 0    |   95963778         |          24.47         |
 | 6-layer TR 1AH 64 we 512    |   79424514         |          24.04         |
