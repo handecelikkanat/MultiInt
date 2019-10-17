@@ -36,6 +36,7 @@ https://github.com/nelson-liu/contextual-repr-analysis
 | 1-layer TR 4AH 64 we 512 | 20.12 |  0.9038531 |  ---  |   ---  |  ---  |
 | 1-layer TR 5AH 64 we 512 | 20.46  |  0.9050883 | ---   |  ---   |  ---  |
 | 1-layer TR 6AH 64 we 512 | 20.56  |  --- | ---   |  ---   |  ---  |
+| 1-layer TR 7AH 64 we 512 | 21.04  |  --- | ---   |  ---   |  ---  |
 
 
 
