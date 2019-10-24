@@ -57,13 +57,15 @@ from previous AH model (He distribution (and generator to the previous one))
 | Model                  | number of parameters     | BLEU newstest2014 |
 | ---                    | ---                      |---                |
 | 1-layer LSTM           | 57860738                 |       21.71            |
-| 6-layer TR 8AH tot 512 (default)    |   95963778         |    50k 23.62 100k 24.83 150k 26.12 200k 25.91               |
+| 6-layer TR 8AH tot 512 (default)    |   95963778         |   25.91               |
 | 6-layer TR 8AH tot 512 (splitted ah)    |   95963778         |    26.00             |
 | 6-layer TR 1AH masking 0    |   95963778         |          24.47         |
 | 6-layer TR 1AH 64 we 512    |   79424514         |          24.04         |
 | 6-layer TR 2AH 64 we 512   |   46709378   (35077888 frozen)      |          25.84         |
 | 6-layer TR 3AH 64 we 512   |   47890178   (36259840 frozen)      |          26.45        |
 | 6-layer TR 4AH 64 we 512   |   47298050   (39214720 frozen)      |          26.58        |
+| 3-layer TR 8AH tot 512 dim  |             |        25.46           |
+| 2-layer TR 8AH tot 512 dim  |             |        24.68           |
 | 1-layer TR 8AH tot 512 dim  | 59181698            |       21.96            |
 | 1-layer TR 1AH tot 512 dim  | 59181698            |       18.47            |
 | 1-layer TR 1AH masking 0   |   59181698         |        16.90          |
@@ -91,6 +93,7 @@ other experiments:
 
 | Model                  | number of parameters     | BLEU newstest2014 |
 | ---                    | ---                      |---                |
+| 6-layer TR 8AH tot 512 (default)    |   95963778         |    50k 23.62 100k 24.83 150k 26.12 200k 25.91               |
 | 1-layer TR 2AH 64 we 512 (freeze only encoder ah)   |   22824514  (33994432 frozen)       |         50k steps 18.11 100k steps 18.42   150k steps 18.44 200k steps 18.77      |
 | 1-layer TR 2AH 64 we 512 from previous 1 AH (identity matrix (and generator to the previous one)) |   22824514  (33994432 frozen)       |     150k steps   3.91          |
 | 1-layer TR 2AH 64 we 512 from previous 1 AH (xavier (as the default setting) (and generator to the previous one)) |   22824514  (33994432 frozen)       |      150k steps   9.44          |
