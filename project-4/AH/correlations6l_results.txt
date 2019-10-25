@@ -1,0 +1,60 @@
+File: 6l/pud.0l.8ah.fullModel.pkl
+  Head 1: current 89.15%
+  Head 2: next 76.36%
+  Head 3: previous 94.87%
+  Head 4: current 91.82%
+  Head 5: previous 47.26% / current 36.97%
+  Head 6: next 43.26%
+  Head 7: current 61.59%
+  Head 8: previous2 63.55% / previous 43.82%
+
+File: 6l/pud.1l.8ah.fullModel.pkl
+  Head 1: 
+  Head 2: next 96.43%
+  Head 3: next 32.62%
+  Head 4: current 69.65%
+  Head 5: 
+  Head 6: next 56.14% / current 31.09%
+  Head 7: previous 96.24%
+  Head 8: current 64.97% / previous 37.95%
+
+File: 6l/pud.2l.8ah.fullModel.pkl
+  Head 1: 
+  Head 2: 
+  Head 3: current 49.12%
+  Head 4: previous 50.00% / previous2 46.66%
+  Head 5: last 52.90% / lastSecondHalf 43.69%
+  Head 6: next2 47.87% / next 32.40%
+  Head 7: 
+  Head 8: 
+
+File: 6l/pud.3l.8ah.fullModel.pkl
+  Head 1: last 43.84% / lastSecondHalf 36.68%
+  Head 2: current 70.78%
+  Head 3: previous2 37.08%
+  Head 4: last 31.18%
+  Head 5: next 40.87% / lastSecondHalf 39.30% / last 34.20% / next2 31.18%
+  Head 6: next 80.51%
+  Head 7: previous 71.01%
+  Head 8: last 63.51% / lastSecondHalf 53.79% / lastFirstHalf 33.97%
+
+File: 6l/pud.4l.8ah.fullModel.pkl
+  Head 1: last 33.68%
+  Head 2: last 39.48% / lastFirstHalf 36.77%
+  Head 3: current 38.00%
+  Head 4: next 44.77%
+  Head 5: lastSecondHalf 58.97% / last 51.65%
+  Head 6: current 55.85%
+  Head 7: lastSecondHalf 49.43% / last 36.58%
+  Head 8: last 56.11% / lastSecondHalf 38.99% / lastFirstHalf 38.84%
+
+File: 6l/pud.5l.8ah.fullModel.pkl
+  Head 1: previous 75.40%
+  Head 2: lastFirstHalf 55.09% / last 54.99%
+  Head 3: current 57.52%
+  Head 4: next 46.81% / next2 36.06%
+  Head 5: last 57.67% / lastSecondHalf 43.49% / lastFirstHalf 36.11%
+  Head 6: last 49.79% / lastFirstHalf 45.83%
+  Head 7: lastSecondHalf 55.05% / last 50.85%
+  Head 8: previous 79.18%
+

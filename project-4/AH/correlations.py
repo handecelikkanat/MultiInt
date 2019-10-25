@@ -88,16 +88,21 @@ def create_samewordbpe(size, tokens):
 # print(scipy.stats.pearsonr(a.flatten(), b.flatten()))
 
 
-paths = ["pud.1ah.pkl", "pud.2ah.pkl", "pud.3ah.pkl", "pud.4ah.pkl", "pud.5ah.pkl", "pud.6ah.pkl", "pud.8ah.fullModel.pkl"]
+#paths = ["pud.1ah.pkl", "pud.2ah.pkl", "pud.3ah.pkl", "pud.4ah.pkl", "pud.5ah.pkl", "pud.6ah.pkl", "pud.8ah.fullModel.pkl"]
+
 bpepath = "en_pud-ud-test.conllu.tok.tc.bpe"
 
-sentences = []
-with open(bpepath, 'r') as f:
-	for line in f:
-		tokens = line.strip().split(" ")
-		sentences.append(tuple(tokens))
 
-for path in paths:
+def loadSentences(bpepath):
+	sentences = []
+	with open(bpepath, 'r') as f:
+		for line in f:
+			tokens = line.strip().split(" ")
+			sentences.append(tuple(tokens))
+	return sentences
+
+
+def analyzeMatrix(path, sentences):
 	print("File:", path)
 
 	with open(path, 'rb') as f:
@@ -121,8 +126,31 @@ for path in paths:
 				correlationTotals[headNr][key] /= len(attentionList)
 		
 		for headNr in correlationTotals:
-			maxKey = max(correlationTotals[headNr], key=correlationTotals[headNr].get)
-			print("  Head {}: {} {:.2f}%".format(headNr+1, maxKey, 100*correlationTotals[headNr][maxKey]))
-			#for key, value in sorted(correlationTotals[headNr].items(), key=lambda x: x[1], reverse=True):
-			#	print("   ", key, correlationTotals[headNr][key])
+			#maxKey = max(correlationTotals[headNr], key=correlationTotals[headNr].get)
+			#print("  Head {}: {} {:.2f}%".format(headNr+1, maxKey, 100*correlationTotals[headNr][maxKey]))
+			valueList = []
+			for key, value in sorted(correlationTotals[headNr].items(), key=lambda x: x[1], reverse=True):
+				if value > 0.3:
+					valueList.append("{} {:.2f}%".format(key, 100*value))
+			print("  Head {}:".format(headNr+1), " / ".join(valueList))
 		print()
+
+
+def analyze1Layer():
+	paths = ["pud.1ah.pkl", "pud.2ah.pkl", "pud.3ah.pkl", "pud.4ah.pkl", "pud.5ah.pkl", "pud.6ah.pkl", "pud.8ah.fullModel.pkl"]
+	sentences = loadSentences("en_pud-ud-test.conllu.tok.tc.bpe")
+	for path in paths:
+		analyzeMatrix(path, sentences)
+	
+
+def analyze6Layers():
+	paths = ["6l/pud.0l.8ah.fullModel.pkl", "6l/pud.1l.8ah.fullModel.pkl", "6l/pud.2l.8ah.fullModel.pkl", "6l/pud.3l.8ah.fullModel.pkl", "6l/pud.4l.8ah.fullModel.pkl", "6l/pud.5l.8ah.fullModel.pkl"]
+	sentences = loadSentences("en_pud-ud-test.conllu.tok.tc.bpe")
+	for path in paths:
+		analyzeMatrix(path, sentences)
+
+
+if __name__ == "__main__":
+	#analyze1Layer()
+	analyze6Layers()
+	

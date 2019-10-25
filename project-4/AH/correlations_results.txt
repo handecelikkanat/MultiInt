@@ -1,43 +1,43 @@
 File: pud.1ah.pkl
-  Head 1: previous 71.34%
+  Head 1: previous 71.34% / previous2 41.69%
 
 File: pud.2ah.pkl
   Head 1: previous 84.95%
-  Head 2: previous2 49.00%
+  Head 2: previous2 49.00% / previous 39.38%
 
 File: pud.3ah.pkl
   Head 1: previous 86.70%
-  Head 2: previous2 50.29%
-  Head 3: next 66.43%
+  Head 2: previous2 50.29% / previous 37.84%
+  Head 3: next 66.43% / next2 40.07%
 
 File: pud.4ah.pkl
   Head 1: previous 88.46%
-  Head 2: previous2 52.79%
-  Head 3: next 69.03%
+  Head 2: previous2 52.79% / previous 39.00%
+  Head 3: next 69.03% / next2 38.90%
   Head 4: lastFirstHalf 32.38%
 
 File: pud.5ah.pkl
   Head 1: previous 88.46%
-  Head 2: previous2 52.79%
-  Head 3: next 69.03%
+  Head 2: previous2 52.79% / previous 39.00%
+  Head 3: next 69.03% / next2 38.90%
   Head 4: lastFirstHalf 32.38%
-  Head 5: next2 2.06%
+  Head 5: 
 
 File: pud.6ah.pkl
   Head 1: previous 90.77%
-  Head 2: previous2 55.63%
-  Head 3: next 72.64%
+  Head 2: previous2 55.63% / previous 40.80%
+  Head 3: next 72.64% / next2 35.63%
   Head 4: lastFirstHalf 31.59%
-  Head 5: lastSecondHalf 54.01%
-  Head 6: last 19.18%
+  Head 5: lastSecondHalf 54.01% / last 42.32% / next2 34.63%
+  Head 6: 
 
 File: pud.8ah.fullModel.pkl
   Head 1: previous 94.51%
   Head 2: next 45.08%
   Head 3: next 82.63%
   Head 4: previous 95.72%
-  Head 5: next2 46.61%
-  Head 6: lastFirstHalf 27.83%
-  Head 7: previous2 46.88%
+  Head 5: next2 46.61% / next 40.72% / lastSecondHalf 32.22%
+  Head 6: 
+  Head 7: previous2 46.88% / previous 44.93%
   Head 8: previous2 68.17%
 
