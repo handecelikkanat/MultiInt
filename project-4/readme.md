@@ -67,7 +67,7 @@ from previous AH model (He distribution (and generator to the previous one))
 | 6-layer TR 5AH 64 we 512   |        |          26.50        |
 | 6-layer TR 6AH 64 we 512   |        |          26.83        |
 | 6-layer TR 7AH 64 we 512   |        |          training        |
-| 5-layer TR 8AH tot 512 dim  |             |        training           |
+| 5-layer TR 8AH tot 512 dim  |             |        26.20           |
 | 4-layer TR 8AH tot 512 dim  |             |        25.60           |
 | 3-layer TR 8AH tot 512 dim  |             |        25.46           |
 | 2-layer TR 8AH tot 512 dim  |             |        24.68           |
