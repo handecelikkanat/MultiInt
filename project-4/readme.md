@@ -1,7 +1,7 @@
 (Ale’s current project, also Edinburgh people) Analyzing Transformer Heads. Pruning (Edinburgh) vs. growing (Ale) transformer heads to find an optimal number of non-redundant heads. Experiments on massive data on new CSC cluster.
 
 ### Benchmark data
-* Train: *europarl, news-commentary, commoncrawl, rapid, paracrawl*  (allfiltered, shuffled, bpe35k from our wmt submission) 11555682 sentences (probably i will scale down to 2.5 M and re-run the training)
+* Train: *europarl, news-commentary, commoncrawl, rapid, paracrawl*  (allfiltered, shuffled, bpe35k from our wmt submission) 11555682 sentences 
 * Dev: *newstest2013*
 * Test: *newstest2014*
 
@@ -67,6 +67,7 @@ from previous AH model (He distribution (and generator to the previous one))
 | 6-layer TR 5AH 64 we 512   |        |          26.50        |
 | 6-layer TR 6AH 64 we 512   |        |          26.83        |
 | 6-layer TR 7AH 64 we 512   |        |          26.62        |
+| 6-layer TR 8AH 64 we 512   |        |          training        |
 | 5-layer TR 8AH tot 512 dim  |             |        26.20           |
 | 4-layer TR 8AH tot 512 dim  |             |        25.60           |
 | 3-layer TR 8AH tot 512 dim  |             |        25.46           |
