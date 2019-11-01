@@ -67,11 +67,7 @@ from previous AH model (He distribution (and generator to the previous one))
 | 6-layer TR 5AH 64 we 512   |        |          26.50        |
 | 6-layer TR 6AH 64 we 512   |        |          26.83        |
 | 6-layer TR 7AH 64 we 512   |        |          26.62        |
-| 6-layer TR 8AH 64 we 512   |        |          training        |
-| 5-layer TR 8AH tot 512 dim  |             |        26.20           |
-| 4-layer TR 8AH tot 512 dim  |             |        25.60           |
-| 3-layer TR 8AH tot 512 dim  |             |        25.46           |
-| 2-layer TR 8AH tot 512 dim  |             |        24.68           |
+| 6-layer TR 8AH 64 we 512   |        |          26.68        |
 | 1-layer TR 8AH tot 512 dim  | 59181698            |       21.96            |
 | 1-layer TR 1AH tot 512 dim  | 59181698            |       18.47            |
 | 1-layer TR 1AH masking 0   |   59181698         |        16.90          |
@@ -87,6 +83,19 @@ from previous AH model (He distribution (and generator to the previous one))
 &nbsp;
 &nbsp;
 &nbsp;
+
+full model  
+
+| Model                  | number of parameters     | BLEU newstest2014 |
+| ---                    | ---                      |---                |
+| 1-layer LSTM           | 57860738                 |       21.71            |
+| 6-layer TR 8AH tot 512 (default)    |   95963778         |   25.91               |
+| 6-layer TR 8AH tot 512 (splitted ah)    |   95963778         |    26.00             |
+| 5-layer TR 8AH tot 512 dim  |             |        26.20           |
+| 4-layer TR 8AH tot 512 dim  |             |        25.60           |
+| 3-layer TR 8AH tot 512 dim  |             |        25.46           |
+| 2-layer TR 8AH tot 512 dim  |             |        24.68           |
+| 1-layer TR 8AH tot 512 dim  | 59181698            |       21.96            |
 
 
 other experiments:
