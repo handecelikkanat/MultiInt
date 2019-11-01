@@ -84,6 +84,18 @@ from previous AH model (He distribution (and generator to the previous one))
 &nbsp;
 &nbsp;
 
+position-wise fixed attention model  
+
+| Model                  | number of parameters     | BLEU newstest2014 |
+| ---                    | ---                      |---                |
+| 3-layer (2 fixed) TR 8AH tot 512 dim  |             |        150k   24.65  (comparison 25.06)        |
+| 2-layer TR 8AH tot 512 dim  |             |                 |
+| 1-layer TR 8AH tot 512 dim  |             |                 |
+
+&nbsp;
+&nbsp;
+&nbsp;
+
 full model  
 
 | Model                  | number of parameters     | BLEU newstest2014 |
