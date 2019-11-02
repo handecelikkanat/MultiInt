@@ -88,7 +88,7 @@ position-wise fixed attention model
 
 | Model                  | number of parameters     | BLEU newstest2014 |
 | ---                    | ---                      |---                |
-| 3-layer (2 fixed) TR 8AH tot 512 dim  |             |        150k   24.65  (comparison 25.06)        |
+| 3-layer (2 fixed) TR 8AH tot 512 dim  |             |           25.04  (comparison 25.46)        |
 | 2-layer TR 8AH tot 512 dim  |             |                 |
 | 1-layer TR 8AH tot 512 dim  |             |                 |
 
